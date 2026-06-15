@@ -66,3 +66,19 @@ body {
 .hero-gradient-dark {
   background: linear-gradient(120deg, #0a4a55 0%, #0e7c6e 100%);
 }
+
+/* Infinite marquee scroll */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.marquee-track {
+  display: flex;
+  gap: 3rem;
+  animation: marquee 60s linear infinite;
+  width: max-content;
+  will-change: transform;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}

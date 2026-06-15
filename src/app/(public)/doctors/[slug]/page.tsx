@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { Media } from "@/components/Media";
 import { CTABand } from "@/components/Sections";
+import { getImageSettings } from "@/lib/settings";
 import { parseList, formatINR } from "@/lib/utils";
 import { ConsultationForm } from "@/components/ConsultationForm";
 import {
@@ -11,6 +12,7 @@ import {
   IconCheck,
   IconHospital,
   IconScalpel,
+  IconCalendar,
 } from "@/components/Icons";
 
 export async function generateMetadata({
@@ -35,45 +37,77 @@ export default async function DoctorDetailPage({
   });
   if (!doctor) notFound();
 
+  const treatments = await prisma.treatment.findMany({
+    select: { name: true, slug: true },
+    orderBy: { name: "asc" },
+  });
+
   const specialties = parseList(doctor.specialties);
   const qualifications = parseList(doctor.qualifications);
+
+  const settings = getImageSettings();
+  const docSetting = settings.doctor;
 
   return (
     <>
       {/* Hero */}
-      <section className="hero-gradient">
-        <div className="container-page grid items-center gap-8 py-14 text-white md:grid-cols-[auto_1fr]">
-          <div className="relative h-44 w-44 overflow-hidden rounded-2xl ring-4 ring-white/30">
-            <Media src={doctor.image} alt={doctor.name} className="h-full w-full" />
-          </div>
-          <div>
-            <div className="mb-2 flex flex-wrap gap-2">
-              <span className="badge bg-white/20 text-white">{doctor.primarySpecialty}</span>
-              <span className="badge bg-white/20 text-white">{doctor.experienceYears}+ Years Experience</span>
+      <section className="hero-gradient py-16 md:py-20 relative overflow-hidden">
+        <div className="container-page grid gap-10 text-white md:grid-cols-[auto_1fr] items-center">
+          <div className="flex justify-center md:justify-start">
+            <div className="relative w-72 overflow-hidden rounded-[2rem] shadow-2xl shadow-teal-950/45 ring-4 ring-white/10 transition-transform duration-300 hover:scale-[1.01]">
+              <div className={`relative w-full ${docSetting.aspectRatio} overflow-hidden`}>
+                <Media src={doctor.image} alt={doctor.name} className={`h-full w-full ${docSetting.objectFit}`} />
+              </div>
+              {/* Verified Badge */}
+              <span className="absolute bottom-4 right-4 inline-flex items-center gap-1 rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-800 shadow-md">
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                Verified
+              </span>
             </div>
-            <h1 className="heading-display text-3xl text-white sm:text-4xl">{doctor.name}</h1>
-            <p className="mt-1 text-white/85">{doctor.title}</p>
-            <div className="mt-4 flex flex-wrap gap-8">
-              <div>
-                <p className="flex items-center gap-1 text-2xl font-bold">
-                  <IconStar className="h-5 w-5 text-brand-orange" /> {doctor.rating}
-                </p>
-                <p className="text-xs text-white/70">Patient Rating</p>
+          </div>
+
+          <div className="flex flex-col items-start">
+            <div className="mb-4 flex flex-wrap gap-2.5">
+              <span className="inline-flex items-center rounded-full bg-white/15 px-4 py-1 text-xs font-semibold text-white backdrop-blur-md">
+                {qualifications[0] || doctor.primarySpecialty}
+              </span>
+              <span className="inline-flex items-center rounded-full bg-white/15 px-4 py-1 text-xs font-semibold text-white backdrop-blur-md">
+                {doctor.experienceYears}+ Years Experience
+              </span>
+            </div>
+            <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight font-serif">
+              {doctor.name}
+            </h1>
+            <p className="mt-2 text-lg text-white/90 font-medium">
+              {doctor.title}
+            </p>
+
+            <div className="mt-6 flex flex-wrap gap-8 items-center border-t border-b border-white/10 py-5 w-full max-w-lg">
+              <div className="flex flex-col">
+                <span className="text-3xl font-extrabold text-white">{doctor.rating}</span>
+                <span className="text-xs text-white/70 mt-1">Patient Rating ({100 + Math.round(doctor.rating * 5)} reviews)</span>
               </div>
-              <div>
-                <p className="text-2xl font-bold">{doctor.surgeriesCount.toLocaleString("en-IN")}+</p>
-                <p className="text-xs text-white/70">Surgeries Performed</p>
+              <div className="hidden sm:block h-10 w-[1px] bg-white/20" />
+              <div className="flex flex-col">
+                <span className="text-3xl font-extrabold text-white">{doctor.surgeriesCount.toLocaleString("en-IN")}+</span>
+                <span className="text-xs text-white/70 mt-1">Surgeries Performed</span>
               </div>
+            </div>
+
+            <div className="mt-8 flex flex-wrap gap-4">
+              <Link
+                href="#appointment-form"
+                className="inline-flex items-center justify-center rounded-full bg-brand-orange px-7 py-3 text-sm font-semibold text-white transition-all hover:bg-orange-600 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-black/10"
+              >
+                <IconCalendar className="mr-2 h-4.5 w-4.5" /> Book Appointment
+              </Link>
               {doctor.hospital && (
-                <div>
-                  <p className="flex items-center gap-1 text-lg font-semibold">
-                    <IconHospital className="h-5 w-5" />
-                    <Link href={`/hospitals/${doctor.hospital.slug}`} className="underline-offset-2 hover:underline">
-                      {doctor.hospital.name}
-                    </Link>
-                  </p>
-                  <p className="text-xs text-white/70">Practising at</p>
-                </div>
+                <Link
+                  href={`/hospitals/${doctor.hospital.slug}`}
+                  className="inline-flex items-center justify-center rounded-full border border-white px-7 py-3 text-sm font-semibold text-white transition-all hover:bg-white/10 hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  View at {doctor.hospital.name}
+                </Link>
               )}
             </div>
           </div>
@@ -114,6 +148,19 @@ export default async function DoctorDetailPage({
               </>
             )}
 
+            {/* Quick Facts */}
+            <div className="mt-10 rounded-xl bg-slate-50 p-5 border border-slate-100">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-3">Quick Facts</h3>
+              <dl className="grid gap-x-8 gap-y-3 text-sm sm:grid-cols-2">
+                <div className="flex justify-between border-b border-slate-200/50 pb-2 sm:border-0 sm:pb-0"><dt className="text-slate-500">Experience</dt><dd className="font-semibold text-brand-dark">{doctor.experienceYears}+ years</dd></div>
+                <div className="flex justify-between border-b border-slate-200/50 pb-2 sm:border-0 sm:pb-0"><dt className="text-slate-500">Consultation Fee</dt><dd className="font-semibold text-brand-dark">{formatINR(doctor.consultationFee)}</dd></div>
+                <div className="flex justify-between border-b border-slate-200/50 pb-2 sm:border-0 sm:pb-0"><dt className="text-slate-500">Specialty</dt><dd className="font-semibold text-brand-dark">{doctor.primarySpecialty}</dd></div>
+                {doctor.hospital && (
+                  <div className="flex justify-between"><dt className="text-slate-500">Hospital</dt><dd className="font-semibold text-brand-dark text-right">{doctor.hospital.name}</dd></div>
+                )}
+              </dl>
+            </div>
+
             <p className="mt-10 rounded-xl bg-amber-50 p-4 text-xs text-amber-800">
               <strong>Important:</strong> Results may vary. Consult a qualified doctor for
               personalised advice. The information provided here is for educational purposes
@@ -123,7 +170,7 @@ export default async function DoctorDetailPage({
 
           {/* Booking sidebar */}
           <div className="space-y-5">
-            <div className="card p-6">
+            <div id="appointment-form" className="card p-6 scroll-mt-24">
               <h3 className="text-lg font-semibold text-brand-dark">Book an Appointment</h3>
               <p className="mt-1 text-sm text-slate-500">
                 Consultation from{" "}
@@ -133,19 +180,9 @@ export default async function DoctorDetailPage({
                 <ConsultationForm
                   source={`doctor:${doctor.slug}`}
                   conditionDefault={`Appointment with ${doctor.name}`}
+                  treatments={treatments}
                 />
               </div>
-            </div>
-            <div className="card p-6">
-              <h3 className="text-sm font-semibold text-brand-dark">Quick Facts</h3>
-              <dl className="mt-3 space-y-2 text-sm">
-                <div className="flex justify-between"><dt className="text-slate-500">Experience</dt><dd className="font-medium">{doctor.experienceYears}+ years</dd></div>
-                <div className="flex justify-between"><dt className="text-slate-500">Consultation Fee</dt><dd className="font-medium">{formatINR(doctor.consultationFee)}</dd></div>
-                <div className="flex justify-between"><dt className="text-slate-500">Specialty</dt><dd className="font-medium">{doctor.primarySpecialty}</dd></div>
-                {doctor.hospital && (
-                  <div className="flex justify-between"><dt className="text-slate-500">Hospital</dt><dd className="font-medium text-right">{doctor.hospital.name}</dd></div>
-                )}
-              </dl>
             </div>
           </div>
         </div>

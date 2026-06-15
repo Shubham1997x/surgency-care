@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Media } from "@/components/Media";
+import { HospitalSlideshow } from "@/components/HospitalSlideshow";
 import { CTABand } from "@/components/Sections";
+import { getImageSettings } from "@/lib/settings";
 import { DoctorCard } from "@/components/Cards";
 import { parseList } from "@/lib/utils";
-import { IconCheck, IconBed, IconHospital, IconClock, IconStar } from "@/components/Icons";
+import { IconCheck, IconBed, IconHospital, IconClock, IconStar, IconPhone } from "@/components/Icons";
 
 export async function generateMetadata({
   params,
@@ -33,44 +36,81 @@ export default async function HospitalDetailPage({
   const specialties = parseList(hospital.specialties);
 
   const facts = [
-    { icon: IconBed, value: `${hospital.beds}+`, label: "Beds" },
-    { icon: IconHospital, value: hospital.modularOTs, label: "Modular OTs" },
-    { icon: IconClock, value: "24×7", label: "Emergency & ICU" },
-    { icon: IconStar, value: hospital.rating, label: "Patient Rating" },
+    { value: `${hospital.beds}+`, label: "Beds", colorClass: "text-[#0ED3B0]" },
+    { value: hospital.modularOTs, label: "Modular OTs", colorClass: "text-[#4E97FD]" },
+    { value: "24×7", label: "Emergency & ICU", colorClass: "text-[#FF9700]" },
+    { value: hospital.rating, label: "Patient Rating", colorClass: "text-[#0E606E]" },
   ];
+
+  const settings = getImageSettings();
+  const hospSetting = settings.hospital;
 
   return (
     <>
+      {/* Breadcrumbs */}
+      <div className="container-page py-4 text-xs font-semibold text-slate-500">
+        <Link href="/hospitals" className="hover:text-brand-dark transition-colors">
+          Hospitals
+        </Link>
+        <span className="mx-2 text-slate-400">›</span>
+        <span className="text-slate-700">
+          {hospital.name}, {hospital.location}
+        </span>
+      </div>
+
       {/* Hero */}
       <section className="hero-gradient">
-        <div className="container-page grid items-center gap-8 py-14 text-white md:grid-cols-2">
-          <div>
-            <span className="badge mb-3 bg-white/20 text-white">{hospital.accreditation}</span>
-            <h1 className="heading-display text-3xl text-white sm:text-4xl">{hospital.name}</h1>
-            <p className="mt-2 text-brand-orange">{hospital.location}</p>
-            <p className="mt-4 max-w-md text-white/85">
-              A trusted multi-specialty hospital equipped with advanced modular operation
-              theatres and experienced surgical teams for general, laparoscopic and aesthetic procedures.
+        <div className="container-page grid items-center gap-10 py-14 text-white md:grid-cols-2">
+          <div className="flex flex-col items-start">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-4 py-1.5 text-xs font-medium text-white/90 backdrop-blur-sm border border-white/10 mb-6">
+              <span className="h-1.5 w-1.5 rounded-full bg-brand-orange"></span>
+              {hospital.accreditation} • Since 2012
+            </span>
+            <h1 className="font-serif text-5xl font-bold leading-tight text-white sm:text-6xl">
+              {hospital.name}
+              <span className="block text-brand-orange mt-1 font-sans font-extrabold">{hospital.location}</span>
+            </h1>
+            <p className="mt-6 max-w-md text-white/85 text-base leading-relaxed">
+              A trusted multi-speciality hospital equipped with
+              advanced modular operation theatres and
+              experienced surgical teams for general, laparoscopic,
+              and aesthetic procedures.
             </p>
+            <div className="mt-8 flex flex-wrap gap-4">
+              <a
+                href="#cta-booking"
+                className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-bold text-[#0E606E] shadow-lg transition hover:bg-white/95 hover:scale-[1.02]"
+              >
+                <IconPhone className="h-4 w-4 text-[#0E606E] stroke-[3px]" />
+                Book Appointment at This Hospital
+              </a>
+              <a
+                href="#expert-surgeons"
+                className="inline-flex items-center gap-2 rounded-full border border-white px-6 py-3.5 text-sm font-bold text-white transition hover:bg-white/10 hover:scale-[1.02]"
+              >
+                View All Doctors
+              </a>
+            </div>
           </div>
-          <div className="relative h-56 overflow-hidden rounded-2xl ring-4 ring-white/20 md:h-64">
-            <Media src={hospital.image} alt={hospital.name} className="h-full w-full" />
+          <div className="bg-white/10 p-6 rounded-[2.5rem] border border-white/15 shadow-2xl backdrop-blur-sm">
+            <div className={`relative w-full overflow-hidden rounded-2xl ring-2 ring-white/10 ${hospSetting.aspectRatio}`}>
+              <HospitalSlideshow imageString={hospital.image} alt={hospital.name} objectFit={hospSetting.objectFit} />
+            </div>
           </div>
         </div>
       </section>
 
       {/* Facts */}
-      <section className="border-b border-slate-100 bg-white">
-        <div className="container-page grid grid-cols-2 gap-6 py-8 md:grid-cols-4">
+      <section className="border-b border-slate-100 bg-white py-8">
+        <div className="container-page grid grid-cols-2 gap-8 md:grid-cols-4 text-center">
           {facts.map((f) => (
-            <div key={f.label} className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-teal/10 text-brand-dark">
-                <f.icon className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-xl font-bold text-brand-dark">{f.value}</p>
-                <p className="text-xs text-slate-500">{f.label}</p>
-              </div>
+            <div key={f.label} className="flex flex-col items-center justify-center">
+              <span className={`text-4xl font-extrabold tracking-tight ${f.colorClass}`}>
+                {f.value}
+              </span>
+              <span className="mt-2 text-sm font-semibold text-slate-500">
+                {f.label}
+              </span>
             </div>
           ))}
         </div>
@@ -115,7 +155,7 @@ export default async function HospitalDetailPage({
 
       {/* Doctors at this hospital */}
       {hospital.doctors.length > 0 && (
-        <section className="bg-slate-50 py-14">
+        <section id="expert-surgeons" className="bg-slate-50 py-14 scroll-mt-6">
           <div className="container-page">
             <h2 className="heading-display text-2xl">Our Expert Surgeons Here</h2>
             <p className="mt-2 text-slate-500">
@@ -130,11 +170,13 @@ export default async function HospitalDetailPage({
         </section>
       )}
 
-      <CTABand
-        title={`Ready for treatment at ${hospital.name}?`}
-        subtitle="Our team will help you book an appointment with the right surgeon and guide you through the process."
-        buttonLabel="Book Free Consultation Today"
-      />
+      <div id="cta-booking" className="scroll-mt-6">
+        <CTABand
+          title={`Ready for treatment at ${hospital.name}?`}
+          subtitle="Our team will help you book an appointment with the right surgeon and guide you through the process."
+          buttonLabel="Book Free Consultation Today"
+        />
+      </div>
     </>
   );
 }

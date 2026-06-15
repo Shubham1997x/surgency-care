@@ -21,9 +21,9 @@ export default async function TreatmentsPage() {
   return (
     <>
       <PageHero
-        eyebrow="Treatments"
+        eyebrow="Our Expertise"
         title="Advanced Surgical Treatments with Compassionate Care"
-        subtitle="From routine general surgeries to advanced laparoscopic and aesthetic procedures — we help you find the right specialist and transparent pricing."
+        subtitle="From routine general surgeries to advanced laparoscopic and aesthetic procedures — we help you find the right specialist and hospital near you."
       />
 
       {categories.length > 0 && (

@@ -1,0 +1,14 @@
+{
+  "doctor": {
+    "aspectRatio": "aspect-square",
+    "objectFit": "object-cover"
+  },
+  "hospital": {
+    "aspectRatio": "aspect-video",
+    "objectFit": "object-cover"
+  },
+  "treatment": {
+    "aspectRatio": "aspect-video",
+    "objectFit": "object-cover"
+  }
+}

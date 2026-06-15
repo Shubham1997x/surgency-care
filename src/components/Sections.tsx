@@ -21,7 +21,7 @@ export function PageHero({
             {eyebrow}
           </span>
         )}
-        <h1 className="heading-display mx-auto max-w-3xl text-3xl text-white sm:text-4xl">
+        <h1 className="heading-display mx-auto max-w-3xl text-4xl text-white sm:text-5xl">
           {title}
         </h1>
         {subtitle && (

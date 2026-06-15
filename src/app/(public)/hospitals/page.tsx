@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import { PageHero, CTABand } from "@/components/Sections";
-import { HospitalCard } from "@/components/Cards";
+import { HospitalFilterList } from "@/components/HospitalFilterList";
 
 export const metadata: Metadata = {
   title: "NABH Accredited Hospitals Across Delhi-NCR",
@@ -22,18 +22,7 @@ export default async function HospitalsPage() {
 
       <section className="bg-slate-50 py-16">
         <div className="container-page">
-          <p className="mb-6 text-sm text-slate-500">
-            Showing {hospitals.length} partner hospital{hospitals.length === 1 ? "" : "s"}
-          </p>
-          {hospitals.length === 0 ? (
-            <p className="text-slate-500">No hospitals available yet.</p>
-          ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {hospitals.map((h) => (
-                <HospitalCard key={h.id} hospital={h} />
-              ))}
-            </div>
-          )}
+          <HospitalFilterList initialHospitals={hospitals} />
           <p className="mt-8 text-center text-xs text-slate-400">
             All our partner hospitals are NABH accredited and regularly audited for patient safety and quality standards.
           </p>

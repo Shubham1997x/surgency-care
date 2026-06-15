@@ -18,6 +18,9 @@ import {
   Check as IconCheck,
   Star as IconStar,
   MapPin as IconMapPin,
+  Sparkles as IconSparkles,
+  Scale as IconScale,
+  Activity as IconActivity,
   LucideProps
 } from "lucide-react";
 
@@ -40,7 +43,10 @@ export {
   IconBed,
   IconCheck,
   IconStar,
-  IconMapPin
+  IconMapPin,
+  IconSparkles,
+  IconScale,
+  IconActivity
 };
 
 const map = {
@@ -53,6 +59,9 @@ const map = {
   users: IconUsers,
   clock: IconClock,
   award: IconAward,
+  sparkles: IconSparkles,
+  scale: IconScale,
+  activity: IconActivity,
 };
 
 export type IconName = keyof typeof map;

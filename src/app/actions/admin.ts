@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/auth";
+import { saveImageSettings } from "@/lib/settings";
 import { slugify, linesToJSON } from "@/lib/utils";
 
 async function requireAdmin() {
@@ -170,6 +171,7 @@ export async function saveTreatment(formData: FormData) {
   const data = {
     slug,
     name,
+    conditionName: str(formData, "conditionName"),
     tagline: str(formData, "tagline"),
     shortDesc: str(formData, "shortDesc"),
     heroDesc: str(formData, "heroDesc"),
@@ -240,3 +242,66 @@ export async function deleteLead(formData: FormData) {
   await prisma.lead.delete({ where: { id: str(formData, "id") } });
   revalidatePath("/dashboard/leads");
 }
+
+/* ------------------------------ TESTIMONIALS ------------------------------ */
+export async function saveTestimonial(formData: FormData) {
+  await requireAdmin();
+  const id = str(formData, "id");
+  const name = str(formData, "name");
+
+  const data = {
+    name,
+    image: str(formData, "image") || null,
+    text: str(formData, "text"),
+    time: str(formData, "time") || "1 day ago",
+    rating: num(formData, "rating") || 5.0,
+    featured: bool(formData, "featured"),
+    treatmentId: str(formData, "treatmentId") || null,
+  };
+
+  if (id) await prisma.testimonial.update({ where: { id }, data });
+  else await prisma.testimonial.create({ data });
+
+  revalidatePath("/dashboard/testimonials");
+  revalidatePath("/testimonials");
+  revalidatePath("/");
+  redirect("/dashboard/testimonials");
+}
+
+export async function deleteTestimonial(formData: FormData) {
+  await requireAdmin();
+  await prisma.testimonial.delete({ where: { id: str(formData, "id") } });
+  revalidatePath("/dashboard/testimonials");
+  revalidatePath("/testimonials");
+  revalidatePath("/");
+}
+
+/* ------------------------------- SETTINGS ------------------------------- */
+export async function updateImageSettings(formData: FormData) {
+  await requireAdmin();
+  const settings = {
+    doctor: {
+      aspectRatio: str(formData, "doctor_aspectRatio") || "aspect-square",
+      objectFit: str(formData, "doctor_objectFit") || "object-cover",
+    },
+    hospital: {
+      aspectRatio: str(formData, "hospital_aspectRatio") || "aspect-video",
+      objectFit: str(formData, "hospital_objectFit") || "object-cover",
+    },
+    treatment: {
+      aspectRatio: str(formData, "treatment_aspectRatio") || "aspect-video",
+      objectFit: str(formData, "treatment_objectFit") || "object-cover",
+    },
+  };
+
+  saveImageSettings(settings);
+
+  revalidatePath("/doctors");
+  revalidatePath("/hospitals");
+  revalidatePath("/treatments");
+  revalidatePath("/");
+
+  redirect("/dashboard/settings?saved=true");
+}
+
+

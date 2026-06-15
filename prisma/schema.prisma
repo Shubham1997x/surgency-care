@@ -77,6 +77,7 @@ model Treatment {
   id            String            @id @default(cuid())
   slug          String            @unique
   name          String
+  conditionName String            @default("")
   tagline       String            @default("")
   shortDesc     String            @default("")
   heroDesc      String            @default("")
@@ -94,6 +95,7 @@ model Treatment {
   category      TreatmentCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
+  testimonials  Testimonial[]
 }
 
 model Blog {
@@ -122,3 +124,18 @@ model Lead {
   source    String   @default("contact")
   createdAt DateTime @default(now())
 }
+
+model Testimonial {
+  id          String     @id @default(cuid())
+  name        String
+  image       String?
+  text        String
+  time        String     @default("1 day ago")
+  rating      Float      @default(5.0)
+  featured    Boolean    @default(true)
+  treatmentId String?
+  treatment   Treatment? @relation(fields: [treatmentId], references: [id], onDelete: SetNull)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+

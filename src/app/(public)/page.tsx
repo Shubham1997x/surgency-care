@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
+import { Building2, Stethoscope, ShieldCheck, PhoneCall } from "lucide-react";
 
 // Home aggregates featured content from every entity, so always render fresh
 // to reflect dashboard edits immediately.
@@ -59,24 +60,6 @@ const whyUs = [
   },
 ];
 
-const testimonials = [
-  {
-    name: "Anjali Mehta",
-    text: "From my first call to recovery, the team was with me. The surgeon they recommended was excellent and the pricing was completely transparent.",
-    city: "Delhi",
-  },
-  {
-    name: "Rohit Sharma",
-    text: "I was nervous about my gallbladder surgery. Surgency Care found me a great hospital nearby and handled everything smoothly.",
-    city: "Ghaziabad",
-  },
-  {
-    name: "Pooja Verma",
-    text: "Genuinely caring people. They answered all my questions patiently and never pushed me. Highly recommend their service.",
-    city: "Noida",
-  },
-];
-
 export default async function HomePage() {
   const [categories, doctors, hospitals, blogs] = await Promise.all([
     prisma.treatmentCategory.findMany({ orderBy: { createdAt: "asc" }, take: 8 }),
@@ -93,45 +76,74 @@ export default async function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden hero-gradient">
-        <div className="absolute inset-0 opacity-20 [background-image:radial-gradient(circle_at_20%_20%,white,transparent_40%),radial-gradient(circle_at_80%_60%,white,transparent_35%)]" />
-        <div className="container-page relative py-20 text-center text-white sm:py-28">
-          <span className="mb-5 inline-block rounded-full bg-white/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide">
-            Trusted Surgical Care
-          </span>
-          <h1 className="heading-display mx-auto max-w-3xl text-4xl text-white sm:text-5xl">
-            Har Emergency Mein Ek Hi Choice.
-            <span className="block text-brand-orange">Surgency Care is Always Right.</span>
+      <section className="relative flex min-h-[100vh] items-center overflow-hidden md:min-h-[85vh] lg:min-h-[100vh]">
+        {/* Background Video */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 z-0 h-full w-full object-cover"
+        >
+          <source src="https://surgencycare.com/wp-content/uploads/2026/03/homehero.mp4" type="video/mp4" />
+          {/* Fallback image */}
+          <img
+            src="https://via.placeholder.com/1920x1080/4E97FD/ffffff?text=Surgency+Care+Doctor"
+            alt="Surgency Care - Trusted doctors in Delhi-NCR and Mumbai"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        </video>
+
+        {/* Dark Overlay */}
+        <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/60 via-black/50 to-black/80" />
+
+        {/* Content Container */}
+        <div className="container-page relative z-20 flex min-h-[100vh] flex-col justify-center py-16 text-center text-white md:min-h-[85vh] md:py-20">
+
+          <h1 className="heading-display mx-auto mb-6 max-w-5xl text-4xl leading-tight text-white sm:text-5xl md:text-6xl">
+            Har Emergency Mein Ek Hi Choice.<br />
+            <span className="text-brand-orange">Surgency Care is Always Right.</span>
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-white/85">
-            We connect patients with verified surgeons and NABH-accredited hospitals
-            for safe, affordable and compassionate surgical care across India.
+
+          <p className="mx-auto mb-10 max-w-3xl text-base leading-relaxed text-white/90 sm:text-lg md:text-xl">
+            24/7 Emergency Service • Free Consultation • Insurance & EMI Options<br />
+            Verified specialists for Gallbladder Stone Removal, Hernia Repair, Piles, Lipoma, Gynecomastia & more in Delhi-NCR & Mumbai
           </p>
 
-          {/* Search bar */}
-          <div className="mx-auto mt-8 flex max-w-2xl flex-col gap-2 rounded-2xl bg-white p-2 shadow-lg sm:flex-row">
-            <div className="flex flex-1 items-center gap-2 px-3">
-              <IconSearch className="h-5 w-5 text-slate-400" />
-              <input
-                placeholder="Search by doctor, hospital or treatment…"
-                className="h-11 w-full bg-transparent text-sm text-slate-700 outline-none"
-              />
-            </div>
-            <Link href="/doctors" className="btn-blue h-11">
-              Search
+          <div className="mb-12 flex flex-col justify-center gap-4 sm:flex-row">
+            <Link
+              href="/contact"
+              className="flex items-center justify-center gap-3 rounded-full bg-brand-orange px-6 py-4 text-sm font-semibold text-white shadow-lg transition hover:bg-orange-600 md:text-lg lg:text-xl"
+            >
+              <IconClock className="h-5 w-5" /> Book Free Consultation Now
             </Link>
+            <a
+              href="tel:+919780299802"
+              className="flex items-center justify-center gap-3 rounded-full border-2 border-white px-6 py-4 text-sm font-semibold text-white transition hover:bg-white hover:text-brand-dark md:text-lg lg:text-xl"
+            >
+              <IconPhone className="h-5 w-5" /> Call 24/7: +91 97802 99802
+            </a>
           </div>
 
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link href="/contact" className="btn-primary">
-              <IconPhone className="h-4 w-4" /> Book Free Consultation
-            </Link>
-            <Link href="/treatments" className="btn-outline">
-              Explore Treatments
-            </Link>
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm font-medium sm:text-base">
+            <div className="flex items-center gap-2">
+              <IconCheck className="h-5 w-5 text-brand-teal" /> Highly Qualified Doctors
+            </div>
+            <div className="flex items-center gap-2">
+              <IconCheck className="h-5 w-5 text-brand-teal" /> NABH Accredited Hospitals
+            </div>
+            <div className="flex items-center gap-2">
+              <IconCheck className="h-5 w-5 text-brand-teal" /> Carebuddy Support
+            </div>
           </div>
+
+          <p className="mx-auto mt-16 max-w-md text-xs opacity-75">
+            *Consultation does not guarantee any specific outcome. Final advice will be given by our specialist after evaluation.
+          </p>
         </div>
       </section>
+
+
 
       {/* Stats */}
       <section className="border-b border-slate-100 bg-white">
@@ -144,15 +156,42 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
-
+      {/* Service Icons Marquee */}
+      <section className="overflow-hidden bg-white py-20">
+        <div className="marquee-track">
+          {[...Array(4)].map((_, setIdx) => (
+            <div key={setIdx} className="flex shrink-0 items-center gap-16 px-8">
+              {[
+                { src: "https://surgencycare.com/wp-content/uploads/2026/05/Piles-e1778613479139.png", label: "Piles", href: "/treatments/piles-treatment" },
+                { src: "https://surgencycare.com/wp-content/uploads/2026/05/Gall-Bladder-Stone.png", label: "Gall Bladder Stone", href: "/treatments/gallbladder-stone-removal" },
+                { src: "https://surgencycare.com/wp-content/uploads/2026/05/Kidney-Stone.png", label: "Kidney Stone", href: "/treatments/kidney-stone-laser-treatment" },
+                { src: "https://surgencycare.com/wp-content/uploads/2026/05/Gynecomastia.png", label: "Gynecomastia", href: "/treatments/gynecomastia-surgery" },
+                { src: "https://surgencycare.com/wp-content/uploads/2026/05/Lipoma.png", label: "Lipoma", href: "/treatments/lipoma-removal-surgery" },
+                { src: "https://surgencycare.com/wp-content/uploads/2026/05/Lasik-e1778614006333.png", label: "Lasik", href: "/treatments/lasik-eye-surgery" },
+                { src: "https://surgencycare.com/wp-content/uploads/2026/05/Liposuction.png", label: "Liposuction", href: "/treatments/liposuction-body-contouring" },
+                { src: "https://surgencycare.com/wp-content/uploads/2026/05/Hernia.png", label: "Hernia", href: "/treatments/hernia-repair-laparoscopic" },
+              ].map((s) => (
+                <Link
+                  key={s.label}
+                  href={s.href}
+                  className="flex flex-col items-center gap-3 group transition-all duration-300 hover:scale-105"
+                >
+                  <img src={s.src} alt={s.label} className="h-40 w-40 object-contain sm:h-40 sm:w-40 transition-filter duration-300 group-hover:brightness-105" />
+                  <p className="whitespace-nowrap text-sm font-semibold text-brand-dark transition-colors duration-300 group-hover:text-brand-blue">{s.label}</p>
+                </Link>
+              ))}
+            </div>
+          ))}
+        </div>
+      </section>
       {/* Specialties / categories */}
       {categories.length > 0 && (
         <section className="bg-slate-50 py-16">
           <div className="container-page">
             <SectionHeading
-              eyebrow="Specialties"
-              title="Surgical Care, Every Specialty"
-              subtitle="Browse our most-requested surgical categories and find the right care."
+              eyebrow="Our Expertise"
+              title="Advanced Surgical Treatments"
+              subtitle="From routine procedure to advance laproscopic and aesthetic surgeries - all under one trusted platform"
             />
             <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {categories.slice(0, 6).map((c) => (
@@ -230,47 +269,74 @@ export default async function HomePage() {
       )}
 
       {/* Why choose us */}
-      <section className="bg-slate-50 py-16">
+      <section className="bg-slate-50/50 py-20">
         <div className="container-page">
-          <SectionHeading
-            eyebrow="Why Surgency Care"
-            title="Why Patients Choose Us"
-          />
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {whyUs.map((w) => (
-              <div key={w.title} className="card p-7">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-teal/10 text-brand-dark">
-                  <w.icon className="h-6 w-6" />
+          <div className="grid gap-12 lg:grid-cols-12 items-center">
+            {/* Left side */}
+            <div className="lg:col-span-5 space-y-6">
+              <h2 className="heading-display text-4xl lg:text-5xl text-brand-dark leading-tight">
+                Why Patients Trust Surgency Care
+              </h2>
+              <p className="text-slate-600 leading-relaxed max-w-md">
+                We understand that surgery can feel overwhelming. That's why we make the entire journey simple, safe, and supportive.
+              </p>
+            </div>
+
+            {/* Right side 2x2 Grid */}
+            <div className="lg:col-span-7 grid gap-6 sm:grid-cols-2">
+              <div className="card p-8 bg-white flex flex-col items-start gap-5">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-teal/10 text-brand-teal">
+                  <Building2 className="h-6 w-6" />
                 </div>
-                <h3 className="mt-4 text-lg font-semibold text-brand-dark">{w.title}</h3>
-                <p className="mt-2 text-sm text-slate-500">{w.desc}</p>
+                <div>
+                  <h3 className="font-semibold text-brand-dark text-lg">NABH Accredited Hospitals</h3>
+                  <p className="mt-2 text-sm text-slate-500 leading-relaxed">
+                    Only partner with top-rated, government-recognized facilities across Delhi-NCR.
+                  </p>
+                </div>
               </div>
-            ))}
+
+              <div className="card p-8 bg-white flex flex-col items-start gap-5">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-teal/10 text-brand-teal">
+                  <Stethoscope className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-brand-dark text-lg">Verified & Experienced Surgeons</h3>
+                  <p className="mt-2 text-sm text-slate-500 leading-relaxed">
+                    Every doctor is carefully verified with years of specialized experience.
+                  </p>
+                </div>
+              </div>
+
+              <div className="card p-8 bg-white flex flex-col items-start gap-5">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-teal/10 text-brand-teal">
+                  <ShieldCheck className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-brand-dark text-lg">Affordable & Transparent Pricing</h3>
+                  <p className="mt-2 text-sm text-slate-500 leading-relaxed">
+                    Clear cost estimates. Insurance & EMI support available.
+                  </p>
+                </div>
+              </div>
+
+              <div className="card p-8 bg-white flex flex-col items-start gap-5">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-teal/10 text-brand-teal">
+                  <PhoneCall className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-brand-dark text-lg">24×7 Personal Support</h3>
+                  <p className="mt-2 text-sm text-slate-500 leading-relaxed">
+                    From first call to full recovery — we're with you at every step.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-16">
-        <div className="container-page">
-          <SectionHeading eyebrow="Our Patients" title="Stories of Trust & Recovery" />
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {testimonials.map((t) => (
-              <div key={t.name} className="card p-7">
-                <div className="mb-3 flex gap-1 text-brand-orange">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <IconStar key={i} className="h-4 w-4" />
-                  ))}
-                </div>
-                <p className="text-sm text-slate-600">“{t.text}”</p>
-                <p className="mt-4 text-sm font-semibold text-brand-dark">
-                  {t.name} <span className="font-normal text-slate-400">• {t.city}</span>
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* Latest blogs */}
       {blogs.length > 0 && (

@@ -12,6 +12,8 @@ const links = [
   { href: "/dashboard/treatments", label: "Treatments" },
   { href: "/dashboard/blogs", label: "Blogs" },
   { href: "/dashboard/leads", label: "Leads" },
+  { href: "/dashboard/testimonials", label: "Testimonials" },
+  { href: "/dashboard/settings", label: "Image Settings" },
 ];
 
 export function Sidebar({ email }: { email: string }) {

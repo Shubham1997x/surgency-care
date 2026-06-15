@@ -7,7 +7,7 @@ import Image from "next/image";
 export function Media({
   src,
   alt,
-  className = "",
+  className = "object-cover",
   initials,
 }: {
   src?: string | null;
@@ -32,7 +32,7 @@ export function Media({
       alt={alt}
       fill
       sizes="(max-width: 768px) 100vw, 33vw"
-      className={`object-cover ${className}`}
+      className={className}
     />
   );
 }

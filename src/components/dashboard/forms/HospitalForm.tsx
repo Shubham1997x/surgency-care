@@ -20,7 +20,7 @@ export function HospitalForm({ hospital }: { hospital?: Hospital | null }) {
         <Field label="Location" name="location" defaultValue={hospital?.location} placeholder="Ghaziabad, Uttar Pradesh" />
       </div>
 
-      <ImageUpload name="image" label="Hospital Image" defaultValue={hospital?.image ?? ""} />
+      <ImageUpload name="image" label="Hospital Images" defaultValue={hospital?.image ?? ""} multiple />
 
       <Field label="Accreditation" name="accreditation" defaultValue={hospital?.accreditation ?? "NABH Accredited"} />
 

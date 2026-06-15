@@ -5,6 +5,8 @@ import { prisma } from "@/lib/db";
 import { CTABand } from "@/components/Sections";
 import { parseList, formatRange } from "@/lib/utils";
 import { IconCheck, IconArrow } from "@/components/Icons";
+import { Media } from "@/components/Media";
+import { getImageSettings } from "@/lib/settings";
 
 export async function generateMetadata({
   params,
@@ -33,27 +35,60 @@ export default async function TreatmentDetailPage({
   const benefits = parseList(treatment.benefits);
   const aftercare = parseList(treatment.aftercare);
 
+  const conditionName = treatment.conditionName || treatment.name;
+
+  const settings = getImageSettings();
+  const treatSetting = settings.treatment;
+
   return (
     <>
       {/* Hero */}
-      <section className="hero-gradient">
-        <div className="container-page py-14 text-white">
-          {treatment.category && (
-            <Link
-              href={`/treatments/category/${treatment.category.slug}`}
-              className="badge mb-3 bg-white/20 text-white"
-            >
-              {treatment.category.name}
-            </Link>
+      <section className="hero-gradient relative overflow-hidden py-16 md:py-24">
+        <div className={`container-page grid items-center gap-10 text-white ${treatment.image ? "lg:grid-cols-[1.2fr_1fr]" : ""}`}>
+          <div className="flex flex-col items-start">
+            {treatment.category && (
+              <Link
+                href={`/treatments/category/${treatment.category.slug}`}
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-4 py-1.5 text-xs font-semibold tracking-wide text-white backdrop-blur-md transition-all hover:bg-white/25 mb-6"
+              >
+                {treatment.category.name} Procedure
+              </Link>
+            )}
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.1] font-serif">
+              {treatment.name}
+              {treatment.tagline && (
+                <span className="block mt-4 text-5xl sm:text-6xl lg:text-7xl font-bold text-brand-orange leading-tight">
+                  {treatment.tagline.split(" ").map((word, i) => (
+                    <span key={i} className="block">{word}</span>
+                  ))}
+                </span>
+              )}
+            </h1>
+            <p className="mt-6 max-w-xl text-base sm:text-lg text-white/90 leading-relaxed">
+              {treatment.heroDesc || treatment.shortDesc}
+            </p>
+            <div className="mt-8 flex flex-wrap gap-4">
+              <Link
+                href="/contact"
+                className="inline-flex items-center justify-center rounded-full bg-brand-orange px-7 py-3 text-sm font-semibold text-white transition-all hover:bg-orange-600 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-black/10"
+              >
+                Book Free Consultation
+              </Link>
+              <Link
+                href="#cost-card"
+                className="inline-flex items-center justify-center rounded-full border border-white px-7 py-3 text-sm font-semibold text-white transition-all hover:bg-white/10 hover:scale-[1.02] active:scale-[0.98]"
+              >
+                Know Approximate Cost
+              </Link>
+            </div>
+          </div>
+          {treatment.image && treatment.image.trim() !== "" && (
+            <div className="flex justify-center lg:justify-end">
+              <div className={`relative w-full max-w-lg overflow-hidden rounded-[2rem] shadow-2xl shadow-teal-950/45 ring-4 ring-white/10 transition-transform duration-300 hover:scale-[1.01] ${treatSetting.aspectRatio}`}>
+                <Media src={treatment.image} alt={treatment.name} className={`h-full w-full ${treatSetting.objectFit}`} />
+              </div>
+            </div>
           )}
-          <h1 className="heading-display max-w-3xl text-3xl text-white sm:text-4xl">
-            {treatment.name}
-          </h1>
-          {treatment.tagline && (
-            <p className="mt-2 text-brand-orange">{treatment.tagline}</p>
-          )}
-          <p className="mt-4 max-w-2xl text-white/85">{treatment.heroDesc || treatment.shortDesc}</p>
-          <Link href="/contact" className="btn-primary mt-7">Book Free Consultation</Link>
         </div>
       </section>
 
@@ -124,23 +159,61 @@ export default async function TreatmentDetailPage({
 
           {/* Cost sidebar */}
           <div className="space-y-5">
-            <div className="card p-6">
-              <h3 className="text-lg font-semibold text-brand-dark">Approximate Cost in Delhi-NCR</h3>
-              <p className="mt-3 text-2xl font-bold text-brand-dark">
-                {formatRange(treatment.costMin, treatment.costMax)}
-              </p>
-              <p className="mt-1 text-xs text-slate-500">
-                Final cost depends on hospital, surgeon and insurance coverage.
-              </p>
-              <Link href="/contact" className="btn-blue mt-5 w-full">Book Free Consultation</Link>
-              <p className="mt-3 text-center text-xs text-slate-400">EMI & cashless insurance options available.</p>
+            <div id="cost-card" className="card p-8 bg-white border border-slate-100 shadow-sm rounded-3xl scroll-mt-24">
+              <h3 className="text-xl font-bold font-serif text-brand-dark leading-tight mb-6">
+                Approximate Cost in Delhi-NCR
+              </h3>
+
+              <div className="space-y-4 text-sm mb-8">
+                <div className="flex justify-between items-start py-3 border-b border-slate-100">
+                  <span className="text-slate-500 font-medium max-w-[150px] leading-tight">
+                    Hospital Charges + Surgeon Fee
+                  </span>
+                  <span className="font-bold text-brand-dark text-right min-w-[100px] leading-tight">
+                    {formatRange(treatment.costMin, treatment.costMax)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center py-3 border-b border-slate-100">
+                  <span className="text-slate-500 font-medium">
+                    With Insurance (Cashless)
+                  </span>
+                  <span className="font-bold text-emerald-600 text-right">
+                    Covered in most policies
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center py-3">
+                  <span className="text-slate-500 font-medium">
+                    EMI Options
+                  </span>
+                  <span className="font-bold text-brand-orange text-right">
+                    Available (3–12 months)
+                  </span>
+                </div>
+              </div>
+
+              <Link
+                href="/contact"
+                className="relative flex items-center justify-center w-full rounded-full bg-brand-blue py-3.5 text-sm font-semibold text-white transition hover:brightness-105 shadow-sm"
+              >
+                Speak to Our Care Team Now
+
+              </Link>
+
+              <div className="text-[10px] text-slate-500 leading-relaxed mt-6 space-y-2 text-center">
+                <p>Cost varies by hospital, surgeon experience, and patient condition.</p>
+                <p className="font-semibold text-slate-700">
+                  Results may vary. Consult a qualified doctor for personalized advice.
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       <CTABand
-        title={`Suffering from symptoms related to ${treatment.name}?`}
+        title={`Suffering from ${conditionName}?`}
         subtitle="Don't wait for complications. Get expert advice and a clear treatment plan today."
         buttonLabel="Book Your Free Consult Now"
       />

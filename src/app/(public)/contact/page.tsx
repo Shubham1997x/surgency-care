@@ -12,7 +12,7 @@ export default function ContactPage() {
           <span className="mb-4 inline-block rounded-full bg-white/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide">
             We&apos;re Here For You
           </span>
-          <h1 className="heading-display text-3xl text-white sm:text-4xl">
+          <h1 className="heading-display text-4xl text-white sm:text-5xl">
             Talk to Us. We&apos;ll Guide You.
             <span className="block text-brand-orange">Completely Free.</span>
           </h1>

@@ -25,6 +25,7 @@ async function main() {
   await prisma.doctor.deleteMany();
   await prisma.hospital.deleteMany();
   await prisma.blog.deleteMany();
+  await prisma.testimonial.deleteMany();
 
   // ---- Hospitals ----
   const shriRam = await prisma.hospital.create({
@@ -92,35 +93,57 @@ async function main() {
   console.log("   ✓ 3 hospitals");
 
   // ---- Treatment Categories ----
-  const genLap = await prisma.treatmentCategory.create({
+  const aesthetics = await prisma.treatmentCategory.create({
     data: {
-      slug: "general-laparoscopic-surgery",
-      name: "General & Laparoscopic Surgery",
+      slug: "aesthetics",
+      name: "Aesthetics",
       description:
-        "Minimally invasive procedures for hernia, gallstones, appendix and more — faster recovery and smaller scars.",
-      icon: "scalpel",
-      color: "#4E97FD",
-      featured: true,
-    },
-  });
-  const plastic = await prisma.treatmentCategory.create({
-    data: {
-      slug: "plastic-aesthetic-surgery",
-      name: "Plastic & Aesthetic Surgery",
-      description:
-        "Reconstructive and cosmetic procedures performed by board-certified plastic surgeons for natural-looking results.",
-      icon: "heart",
+        "Enhance your appearance with safe, advanced cosmetic procedures. Includes gynecomastia, lipoma removal, liposuction, and body contouring.",
+      icon: "sparkles",
       color: "#FF9700",
       featured: true,
     },
   });
   const urology = await prisma.treatmentCategory.create({
     data: {
-      slug: "urology-weight-loss",
-      name: "Urology & Weight Loss",
+      slug: "urology",
+      name: "Urology",
       description:
-        "Stone removal, urological surgery and bariatric weight-loss procedures with experienced specialists.",
+        "Expert care for urinary tract and male reproductive conditions. Treatment for kidney stones, prostate disorders, and bladder problems.",
       icon: "stethoscope",
+      color: "#0ED3B0",
+      featured: true,
+    },
+  });
+  const weightLoss = await prisma.treatmentCategory.create({
+    data: {
+      slug: "weight-loss",
+      name: "Weight Loss",
+      description:
+        "Effective weight management through advanced bariatric procedures including gastric bypass and sleeve gastrectomy.",
+      icon: "scale",
+      color: "#4E97FD",
+      featured: true,
+    },
+  });
+  const laparoscopic = await prisma.treatmentCategory.create({
+    data: {
+      slug: "laparoscopic",
+      name: "Laparoscopic",
+      description:
+        "Minimally invasive laparoscopic surgery with smaller incisions, less pain, and faster recovery. Treats hernia, gallbladder, and appendix.",
+      icon: "activity",
+      color: "#4E97FD",
+      featured: true,
+    },
+  });
+  const proctology = await prisma.treatmentCategory.create({
+    data: {
+      slug: "proctology",
+      name: "Proctology",
+      description:
+        "Modern treatment for piles, fissures, fistulas, and other rectal & anal conditions using advanced, minimally invasive techniques.",
+      icon: "scalpel",
       color: "#0ED3B0",
       featured: true,
     },
@@ -129,19 +152,22 @@ async function main() {
     data: {
       slug: "ophthalmology",
       name: "Ophthalmology",
-      description: "Advanced eye-care surgeries including cataract and LASIK with quick, comfortable recovery.",
+      description:
+        "Advanced eye care solutions including cataract surgery, LASIK, and glaucoma treatment to restore and improve vision.",
       icon: "eye",
       color: "#0E606E",
+      featured: true,
     },
   });
 
-  console.log("   ✓ 4 categories");
+  console.log("   ✓ 6 categories");
 
   // ---- Treatments ----
   await prisma.treatment.create({
     data: {
       slug: "gallbladder-stone-removal",
       name: "Gallbladder Stone Removal (Laparoscopic Cholecystectomy)",
+      conditionName: "Gallbladder Stones",
       tagline: "Laparoscopic Cholecystectomy",
       shortDesc:
         "A safe, minimally invasive surgery to remove the gallbladder and stones. Most patients return home the same day with minimal pain.",
@@ -152,7 +178,7 @@ async function main() {
       costMax: 75000,
       recoveryNote: "Most patients resume normal activities within a week.",
       featured: true,
-      categoryId: genLap.id,
+      categoryId: laparoscopic.id,
       symptoms: J([
         "Severe pain in the upper-right abdomen",
         "Nausea and vomiting after meals",
@@ -183,6 +209,7 @@ async function main() {
     data: {
       slug: "hernia-repair-laparoscopic",
       name: "Hernia Repair (Laparoscopic & Open)",
+      conditionName: "Hernia",
       tagline: "Laparoscopic Mesh Repair",
       shortDesc:
         "Specialised hernia correction using laparoscopic, laxative and aesthetic procedures for lasting relief.",
@@ -190,7 +217,7 @@ async function main() {
       costMax: 90000,
       recoveryNote: "Return to daily activities within a week.",
       featured: true,
-      categoryId: genLap.id,
+      categoryId: laparoscopic.id,
       symptoms: J(["Visible bulge in the abdomen or groin", "Discomfort while lifting or bending", "Aching or pressure at the site"]),
       procedureSteps: J(["Performed laparoscopically or open under anaesthesia.", "A surgical mesh reinforces the weakened area.", "Incisions are closed with minimal scarring."]),
       benefits: J(["Strong, durable repair", "Low recurrence rate", "Faster recovery with laparoscopy"]),
@@ -202,6 +229,7 @@ async function main() {
     data: {
       slug: "gynecomastia-surgery",
       name: "Gynecomastia Surgery",
+      conditionName: "Gynecomastia",
       tagline: "Male Chest Correction",
       shortDesc:
         "Male breast reduction for a flatter, more confident chest. Safe and effective day-care procedure.",
@@ -209,7 +237,7 @@ async function main() {
       costMax: 95000,
       recoveryNote: "Resume work in 5–7 days.",
       featured: true,
-      categoryId: plastic.id,
+      categoryId: aesthetics.id,
       symptoms: J(["Enlarged or swollen chest tissue in men", "Self-consciousness about chest appearance"]),
       procedureSteps: J(["Performed as a day-care procedure under anaesthesia.", "Excess glandular tissue and fat are removed.", "Chest is contoured for a natural look."]),
       benefits: J(["Minimal scarring", "Permanent results", "Boost in confidence"]),
@@ -221,13 +249,14 @@ async function main() {
     data: {
       slug: "liposuction-body-contouring",
       name: "Liposuction & Body Contouring",
+      conditionName: "Stubborn Fat",
       tagline: "VASER / Laser-assisted",
       shortDesc:
         "Remove stubborn fat and achieve a more sculpted body shape with advanced contouring techniques.",
       costMin: 70000,
       costMax: 150000,
       recoveryNote: "Improved body confidence within weeks.",
-      categoryId: plastic.id,
+      categoryId: aesthetics.id,
       symptoms: J(["Stubborn fat pockets resistant to diet/exercise"]),
       procedureSteps: J(["Targeted fat removal using VASER or laser.", "Sculpted body shape with advanced techniques."]),
       benefits: J(["Targeted fat removal", "VASER / laser assisted", "Improved body confidence"]),
@@ -239,13 +268,14 @@ async function main() {
     data: {
       slug: "piles-treatment",
       name: "Piles (Haemorrhoids) Treatment",
+      conditionName: "Piles / Haemorrhoids",
       tagline: "Laser Procedure",
       shortDesc:
         "Painless laser treatment for piles with same-day discharge and minimal recovery time.",
       costMin: 35000,
       costMax: 60000,
       recoveryNote: "Same-day discharge in most cases.",
-      categoryId: urology.id,
+      categoryId: proctology.id,
       symptoms: J(["Bleeding during bowel movements", "Itching or discomfort", "Swelling near the anus"]),
       procedureSteps: J(["Laser energy is used to shrink the haemorrhoids.", "Day-care procedure with minimal bleeding."]),
       benefits: J(["Painless and bloodless", "Same-day discharge", "Quick recovery"]),
@@ -257,13 +287,14 @@ async function main() {
     data: {
       slug: "weight-loss-bariatric-surgery",
       name: "Weight Loss (Bariatric) Surgery",
+      conditionName: "Obesity / Excess Weight",
       tagline: "Sleeve / Bypass",
       shortDesc:
         "Sustainable weight-loss surgery for those struggling with obesity and related health conditions.",
       costMin: 250000,
       costMax: 400000,
       recoveryNote: "Gradual return to activity over a few weeks.",
-      categoryId: urology.id,
+      categoryId: weightLoss.id,
       symptoms: J(["Obesity with BMI over 35", "Diabetes or hypertension linked to weight"]),
       procedureSteps: J(["Laparoscopic sleeve gastrectomy or gastric bypass.", "Reduces stomach capacity for sustained weight loss."]),
       benefits: J(["Significant, sustained weight loss", "Improvement in diabetes and BP", "Better quality of life"]),
@@ -271,81 +302,182 @@ async function main() {
     },
   });
 
-  console.log("   ✓ 6 treatments");
+  await prisma.treatment.create({
+    data: {
+      slug: "kidney-stone-laser-treatment",
+      name: "Kidney Stone Laser Treatment (RIRS / URSL)",
+      conditionName: "Kidney Stones",
+      tagline: "Minimally Invasive Laser Lithotripsy",
+      shortDesc:
+        "Advanced laser technology to dust and remove kidney stones with zero incisions and quick recovery.",
+      costMin: 45000,
+      costMax: 85000,
+      recoveryNote: "Most patients go home the same or next day and resume light activities in 2-3 days.",
+      categoryId: urology.id,
+      symptoms: J(["Sharp pain in the back or side", "Blood in urine (hematuria)", "Painful or frequent urination", "Nausea or fever in case of infection"]),
+      procedureSteps: J(["A thin flexible scope is passed through the natural passage to reach the stone.", "Holmium laser fiber dusts the stone into tiny particles.", "Stone fragments are washed out or retrieved using a basket."]),
+      benefits: J(["No surgical cuts or stitches", "High success rate for all stone sizes", "Quick discharge and minimal downtime", "Low risk of complications"]),
+      aftercare: J(["Drink plenty of water to flush out stone dust.", "Avoid heavy lifting for 3-5 days.", "Take prescribed medications for smooth recovery."]),
+    },
+  });
+
+  await prisma.treatment.create({
+    data: {
+      slug: "lipoma-removal-surgery",
+      name: "Lipoma Removal Surgery",
+      conditionName: "Lipomas",
+      tagline: "Aesthetic Surgical Excision",
+      shortDesc:
+        "Safe, painless excision of lipoma lumps under local anesthesia with minimal scarring.",
+      costMin: 15000,
+      costMax: 35000,
+      recoveryNote: "Stitch removal in 7-10 days. Resume normal activities the next day.",
+      categoryId: aesthetics.id,
+      symptoms: J(["Soft, doughy lump under the skin", "Moves easily with slight finger pressure", "Generally painless unless pressing on nerves"]),
+      procedureSteps: J(["Area is numbed using local anesthesia.", "A small aesthetic incision is made directly over the lipoma.", "The fatty lump is carefully extracted and closed with fine sutures."]),
+      benefits: J(["Immediate and complete removal", "Painless day-care procedure", "Minimal aesthetic scarring", "Low recurrence rate"]),
+      aftercare: J(["Keep the dressing clean and dry.", "Avoid stretching the incision area.", "Stitch removal as advised in 7-10 days."]),
+    },
+  });
+
+  await prisma.treatment.create({
+    data: {
+      slug: "lasik-eye-surgery",
+      name: "Lasik Eye Surgery",
+      conditionName: "Vision Issues",
+      tagline: "Advanced Vision Correction",
+      shortDesc:
+        "Say goodbye to glasses and contact lenses with advanced blade-free laser vision correction.",
+      costMin: 35000,
+      costMax: 75000,
+      recoveryNote: "Vision stabilizes within 24-48 hours. Clear sight without glasses.",
+      categoryId: ophthal.id,
+      symptoms: J(["Short-sightedness (Myopia)", "Far-sightedness (Hyperopia)", "Astigmatism (Blurred vision)", "Dependence on glasses or contact lenses"]),
+      procedureSteps: J(["Numbing eye drops are applied for a painless procedure.", "A precise corneal flap is created using a laser.", "The cornea is reshaped to correct vision and the flap is repositioned."]),
+      benefits: J(["Quick 10-minute procedure", "Rapid vision recovery within 24 hours", "Permanent freedom from glasses", "Highly safe and precise"]),
+      aftercare: J(["Avoid rubbing your eyes.", "Use prescribed antibiotic and lubricating eye drops.", "Wear protective eyewear outdoors for a few days."]),
+    },
+  });
+
+  console.log("   ✓ 9 treatments");
 
   // ---- Doctors ----
   await prisma.doctor.create({
     data: {
-      slug: "dr-rajesh-sharma",
-      name: "Dr. Rajesh Sharma",
-      title: "Senior Consultant — General & Laparoscopic Surgery",
-      primarySpecialty: "General Surgery",
+      slug: "dr-tapeshwar-sehgal",
+      name: "Dr. Tapeshwar Sehgal",
+      title: "Senior Consultant — Plastic, Burn & Hair Transplant Surgery",
+      primarySpecialty: "Plastic Surgery",
       about:
-        "Dr. Rajesh Sharma is a highly experienced General and Laparoscopic Surgeon with over 18 years of expertise. He has successfully performed thousands of minimally invasive surgeries, helping patients recover faster with minimal scarring and discomfort. He specialises in gallbladder stone removal, hernia repair, appendix surgery and piles treatment.",
-      experienceYears: 18,
+        "Dr. Tapeshwar Sehgal is an esteemed Plastic and Reconstructive Surgeon with over 28 years of clinical experience. He specializes in advanced cosmetic procedures, burn treatment, and hair transplant surgeries, delivering outstanding patient care and natural results.",
+      experienceYears: 28,
       rating: 4.9,
-      surgeriesCount: 8500,
-      consultationFee: 800,
+      surgeriesCount: 9500,
+      consultationFee: 1500,
       featured: true,
-      hospitalId: shriRam.id,
-      specialties: J(["Gallbladder Stone Removal", "Hernia Repair", "Appendix Surgery", "Piles (Laser) Treatment"]),
+      hospitalId: apex.id,
+      specialties: J(["Plastic Surgery", "Burn Surgery", "Hair Transplant Surgery"]),
       qualifications: J([
-        "MS — General Surgery, King George's Medical University, Lucknow",
-        "Fellowship in Minimal Access Surgery (FMAS)",
-        "18+ years of surgical experience",
-        "Former Senior Consultant at Max Hospital, Ghaziabad",
+        "MCh — Plastic Surgery",
+        "MS — General Surgery",
+        "28+ years of experience overall (18 years as a specialist)",
+        "Senior Consultant at Apex Multi-Speciality Hospital",
       ]),
     },
   });
 
   await prisma.doctor.create({
     data: {
-      slug: "dr-priya-mehta",
-      name: "Dr. Priya Mehta",
-      title: "Consultant — Plastic & Aesthetic Surgery",
-      primarySpecialty: "Plastic Surgery",
+      slug: "dr-saurabh-kumar-goyal",
+      name: "Dr. Saurabh Kumar Goyal",
+      title: "Senior Consultant — Laparoscopic, General & Proctology Surgery",
+      primarySpecialty: "General Surgery",
       about:
-        "Dr. Priya Mehta is a board-certified Plastic and Aesthetic Surgeon specialising in gynecomastia correction, liposuction, laser procedures and reconstructive surgery. She is known for natural-looking results and a compassionate, patient-first approach.",
-      experienceYears: 12,
+        "Dr. Saurabh Kumar Goyal is a highly skilled General and Minimally Invasive Surgeon with 18 years of experience. He specializes in laparoscopic surgeries for gallbladder, hernia, and appendix, as well as laser treatment for proctology cases like piles, fissures, and fistulas.",
+      experienceYears: 18,
       rating: 4.8,
+      surgeriesCount: 6500,
+      consultationFee: 1000,
+      featured: true,
+      hospitalId: shriRam.id,
+      specialties: J(["General Surgery", "Laparoscopic Surgery", "Proctology"]),
+      qualifications: J([
+        "MS — General Surgery",
+        "Fellowship in Minimal Access Surgery (FMAS)",
+        "18+ years of experience overall (12 years as a specialist)",
+      ]),
+    },
+  });
+
+  await prisma.doctor.create({
+    data: {
+      slug: "dr-salil-yadav",
+      name: "Dr. Salil Yadav",
+      title: "Consultant — Robotic & Laparoscopic Surgery",
+      primarySpecialty: "General Surgery",
+      about:
+        "Dr. Salil Yadav is a modern surgical specialist with 13 years of experience. He is highly proficient in performing advanced laparoscopic and robotic procedures, helping patients achieve quicker recovery times with minimal scarring.",
+      experienceYears: 13,
+      rating: 4.7,
       surgeriesCount: 4200,
       consultationFee: 1200,
       featured: true,
-      hospitalId: apex.id,
-      specialties: J(["Gynecomastia Surgery", "Liposuction", "Laser Procedures", "Reconstructive Surgery"]),
+      hospitalId: carewell.id,
+      specialties: J(["Robotic Surgery", "Laparoscopic Surgery"]),
       qualifications: J([
-        "MCh — Plastic Surgery, AIIMS New Delhi",
         "MS — General Surgery",
-        "12+ years of aesthetic surgery experience",
-        "Member, Association of Plastic Surgeons of India",
+        "Fellowship in Robotic Surgery",
+        "13+ years of experience overall (7 years as a specialist)",
       ]),
     },
   });
 
   await prisma.doctor.create({
     data: {
-      slug: "dr-amit-verma",
-      name: "Dr. Amit Verma",
-      title: "Consultant — Urology & Minimally Invasive Surgery",
-      primarySpecialty: "Urology",
+      slug: "dr-sahil-singla",
+      name: "Dr. Sahil Singla",
+      title: "Consultant — Plastic, Burn & Diabetic Foot Surgery",
+      primarySpecialty: "Plastic Surgery",
       about:
-        "Dr. Amit Verma is an expert in kidney stone treatment, prostate surgery and urological procedures. He combines advanced laser techniques with a patient-centred approach for the best outcomes.",
-      experienceYears: 15,
-      rating: 4.7,
-      surgeriesCount: 6100,
-      consultationFee: 1000,
+        "Dr. Sahil Singla is a board-certified plastic and reconstructive surgeon with 16 years of experience. He is dedicated to burn reconstruction, diabetic foot management, and cosmetic body contouring.",
+      experienceYears: 16,
+      rating: 4.9,
+      surgeriesCount: 5100,
+      consultationFee: 1200,
       featured: true,
-      hospitalId: carewell.id,
-      specialties: J(["Kidney Stone Treatment", "Prostate Surgery", "Urological Procedures"]),
+      hospitalId: apex.id,
+      specialties: J(["Plastic Surgery", "Diabetic Foot Surgery", "Burn Surgery"]),
       qualifications: J([
-        "MCh — Urology, PGIMER Chandigarh",
+        "MCh — Plastic Surgery",
         "MS — General Surgery",
-        "15+ years of urology experience",
+        "16+ years of experience overall (9 years as a specialist)",
       ]),
     },
   });
 
-  console.log("   ✓ 3 doctors");
+  await prisma.doctor.create({
+    data: {
+      slug: "dr-deepak-kumar-sinha",
+      name: "Dr. Deepak Kumar Sinha",
+      title: "Consultant — Laparoscopic, General & Proctology Surgery",
+      primarySpecialty: "General Surgery",
+      about:
+        "Dr. Deepak Kumar Sinha is a dedicated general and proctology surgeon with 18 years of experience. He has extensive expertise in laparoscopic and proctological procedures, providing safe and effective treatments for piles, hernia, and stones.",
+      experienceYears: 18,
+      rating: 4.8,
+      surgeriesCount: 5800,
+      consultationFee: 1000,
+      featured: true,
+      hospitalId: shriRam.id,
+      specialties: J(["General Surgery", "Laparoscopic Surgery", "Proctology"]),
+      qualifications: J([
+        "MS — General Surgery",
+        "18+ years of experience overall (6 years as a specialist)",
+      ]),
+    },
+  });
+
+  console.log("   ✓ 5 doctors");
 
   // ---- Blogs ----
   await prisma.blog.create({
@@ -389,6 +521,64 @@ async function main() {
   });
 
   console.log("   ✓ 3 blogs");
+
+  // ---- Testimonials ----
+  await prisma.testimonial.create({
+    data: {
+      name: "Gaurav Pandey",
+      image: "https://surgencycare.com/wp-content/uploads/2026/05/ChIJNXeRgNIjDTkRes9ZRepU7mo_e07c9bb54f9432440fa86e61f71c3b6b.jpg",
+      text: "I would like to express my heartfelt gratitude to Divyansh Chhabra ji and Shavi Arora ji for their incredible support during my surgery. They ensured that all the facilities were arranged exactly as promised. They are very supportive and wonderful people—truly great individuals.",
+      time: "2 months ago",
+      rating: 5.0,
+      featured: true,
+    },
+  });
+
+  await prisma.testimonial.create({
+    data: {
+      name: "Rishabh Nigam",
+      image: "https://surgencycare.com/wp-content/uploads/2026/05/ChIJNXeRgNIjDTkRes9ZRepU7mo_481f09e4afb0f1be77761b899f019225.jpg",
+      text: "I like the healthcare facility provided by Surgency Care for my father piles treatment. Divyansh help me find the best doctor for the treatment at the top hospital of Delhi NCR. Totally recommended!",
+      time: "5 months ago",
+      rating: 5.0,
+      featured: true,
+    },
+  });
+
+  await prisma.testimonial.create({
+    data: {
+      name: "nisha arora",
+      image: "https://surgencycare.com/wp-content/uploads/2026/05/ChIJNXeRgNIjDTkRes9ZRepU7mo_1a12fce528930a69ad8566558da2c237.jpg",
+      text: "Top-notch Ophthalmology at Surgency Care! Had LASIK and it's life-changing. Highly skilled surgeons and excellent facilities. Totally worth it and recommended. 💯",
+      time: "5 months ago",
+      rating: 5.0,
+      featured: true,
+    },
+  });
+
+  await prisma.testimonial.create({
+    data: {
+      name: "Adil",
+      image: "https://surgencycare.com/wp-content/uploads/2025/10/ChIJNXeRgNIjDTkRes9ZRepU7mo_d8a876e26b954e6a6f9fad6e858ea8a2.jpg",
+      text: "Had a good experience. They recommended to an expert doctor and coordinated end to end during dad's surgery. Thanks a lott..✨✨",
+      time: "8 months ago",
+      rating: 5.0,
+      featured: true,
+    },
+  });
+
+  await prisma.testimonial.create({
+    data: {
+      name: "Ankush Ahuja",
+      image: "https://surgencycare.com/wp-content/uploads/2026/05/ChIJNXeRgNIjDTkRes9ZRepU7mo_89214131cd2272ad5c82f2cc4961be9d.jpg",
+      text: "My surgery turned out to be an amazing experience — from the care of the doctors to the smooth recovery, it taught me gratitude, trust, and the true power of modern medicine.",
+      time: "9 months ago",
+      rating: 5.0,
+      featured: true,
+    },
+  });
+
+  console.log("   ✓ 5 testimonials");
   console.log("✅ Seed complete.");
 }
 
