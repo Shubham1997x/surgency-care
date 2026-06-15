@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String   @default("Admin")
+  createdAt    DateTime @default(now())
+}
+
+model Hospital {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  name          String
+  location      String
+  image         String?
+  accreditation String   @default("NABH Accredited")
+  about         String   @default("")
+  beds          Int      @default(0)
+  modularOTs    Int      @default(0)
+  rating        Float    @default(4.5)
+  startingPrice Int      @default(0)
+  // JSON string array of {title, description}
+  whyChoose     String   @default("[]")
+  // JSON string array of specialty names
+  specialties   String   @default("[]")
+  featured      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  doctors       Doctor[]
+}
+
+model Doctor {
+  id              String    @id @default(cuid())
+  slug            String    @unique
+  name            String
+  title           String    @default("")
+  primarySpecialty String   @default("")
+  image           String?
+  about           String    @default("")
+  experienceYears Int       @default(0)
+  rating          Float     @default(4.8)
+  surgeriesCount  Int       @default(0)
+  consultationFee Int       @default(0)
+  // JSON string arrays
+  specialties     String    @default("[]")
+  qualifications  String    @default("[]")
+  featured        Boolean   @default(false)
+  hospitalId      String?
+  hospital        Hospital? @relation(fields: [hospitalId], references: [id], onDelete: SetNull)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model TreatmentCategory {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  name        String
+  description String      @default("")
+  icon        String      @default("stethoscope")
+  // hex accent color for the card
+  color       String      @default("#4E97FD")
+  featured    Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  treatments  Treatment[]
+}
+
+model Treatment {
+  id            String            @id @default(cuid())
+  slug          String            @unique
+  name          String
+  tagline       String            @default("")
+  shortDesc     String            @default("")
+  heroDesc      String            @default("")
+  image         String?
+  costMin       Int               @default(0)
+  costMax       Int               @default(0)
+  recoveryNote  String            @default("")
+  // JSON string arrays
+  symptoms      String            @default("[]")
+  procedureSteps String           @default("[]")
+  benefits      String            @default("[]")
+  aftercare     String            @default("[]")
+  featured      Boolean           @default(false)
+  categoryId    String?
+  category      TreatmentCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+}
+
+model Blog {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  category    String   @default("General Surgery")
+  excerpt     String   @default("")
+  content     String   @default("")
+  coverImage  String?
+  author      String   @default("Surgency Care Team")
+  readTime    String   @default("5 min read")
+  featured    Boolean  @default(false)
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Lead {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String
+  city      String   @default("")
+  condition String   @default("")
+  message   String   @default("")
+  source    String   @default("contact")
+  createdAt DateTime @default(now())
+}
