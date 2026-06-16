@@ -85,6 +85,10 @@ model Treatment {
   costMin       Int               @default(0)
   costMax       Int               @default(0)
   recoveryNote  String            @default("")
+  duration      String            @default("")
+  hospitalStay  String            @default("")
+  recoveryTime  String            @default("")
+  successRate   String            @default("")
   // JSON string arrays
   symptoms      String            @default("[]")
   procedureSteps String           @default("[]")

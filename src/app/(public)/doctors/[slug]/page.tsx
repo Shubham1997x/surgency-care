@@ -56,7 +56,7 @@ export default async function DoctorDetailPage({
           <div className="flex justify-center md:justify-start">
             <div className="relative w-72 overflow-hidden rounded-[2rem] shadow-2xl shadow-teal-950/45 ring-4 ring-white/10 transition-transform duration-300 hover:scale-[1.01]">
               <div className={`relative w-full ${docSetting.aspectRatio} overflow-hidden`}>
-                <Media src={doctor.image} alt={doctor.name} className={`h-full w-full ${docSetting.objectFit}`} />
+                <Media src={doctor.image} alt={doctor.name} className={`h-full w-full ${docSetting.aspectRatio}`} />
               </div>
               {/* Verified Badge */}
               <span className="absolute bottom-4 right-4 inline-flex items-center gap-1 rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-800 shadow-md">

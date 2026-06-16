@@ -56,6 +56,11 @@ export default async function TestimonialsPage() {
     orderBy: { createdAt: "desc" },
   });
 
+  const treatments = await prisma.treatment.findMany({
+    select: { name: true, slug: true },
+    orderBy: { name: "asc" },
+  });
+
   const testimonials = dbTestimonials.length > 0 ? dbTestimonials : fallbackTestimonials;
 
   return (
@@ -148,7 +153,7 @@ export default async function TestimonialsPage() {
                 Book a free consultation today. Speak with our experts to find the right surgeon and hospital.
               </p>
             </div>
-            <ConsultationForm source="testimonials" compact />
+            <ConsultationForm source="testimonials" compact treatments={treatments} />
           </div>
         </div>
       </section>

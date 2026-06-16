@@ -37,11 +37,12 @@ function IconYoutube({ className }: { className?: string }) {
 
 const quickLinks = [
   { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
+  { href: "/about", label: "About Us" },
   { href: "/treatments", label: "Treatments" },
   { href: "/doctors", label: "Doctors" },
   { href: "/hospitals", label: "Hospitals" },
   { href: "/testimonials", label: "Testimonials" },
+  { href: "/faqs", label: "FAQs" },
   { href: "/blogs", label: "Blog" },
 ];
 
@@ -202,8 +203,19 @@ export function SiteFooter() {
 
       {/* Bottom bar */}
       <div className="border-t border-white/10">
-        <div className="container-page flex flex-col gap-2 py-6 text-center text-xs text-white/50 sm:flex-row sm:justify-between sm:text-left">
-          <p>© {new Date().getFullYear()} Surgency Care. All Rights Reserved.</p>
+        <div className="container-page flex flex-col gap-4 py-6 text-center text-xs text-white/50 sm:flex-row sm:justify-between sm:text-left">
+          <div className="flex flex-col gap-2 sm:gap-6 sm:flex-row items-center">
+            <p>© {new Date().getFullYear()} Surgency Care. All Rights Reserved.</p>
+            <div className="flex gap-4">
+              <Link href="/privacy" className="hover:text-white transition-colors">
+                Privacy Policy
+              </Link>
+              <span>|</span>
+              <Link href="/terms" className="hover:text-white transition-colors">
+                Terms & Conditions
+              </Link>
+            </div>
+          </div>
           <p className="max-w-xl">
             Information on this website is for general awareness only and not a substitute for professional medical advice. Always consult a qualified doctor.
           </p>

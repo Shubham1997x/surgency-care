@@ -4,9 +4,10 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { CTABand } from "@/components/Sections";
 import { parseList, formatRange } from "@/lib/utils";
-import { IconCheck, IconArrow } from "@/components/Icons";
+import { IconCheck, IconArrow, IconStar } from "@/components/Icons";
 import { Media } from "@/components/Media";
 import { getImageSettings } from "@/lib/settings";
+import { TestimonialCarousel } from "@/components/TestimonialCarousel";
 
 export async function generateMetadata({
   params,
@@ -26,7 +27,7 @@ export default async function TreatmentDetailPage({
   const { slug } = await params;
   const treatment = await prisma.treatment.findUnique({
     where: { slug },
-    include: { category: true },
+    include: { category: true, testimonials: true },
   });
   if (!treatment) notFound();
 
@@ -91,6 +92,64 @@ export default async function TreatmentDetailPage({
           )}
         </div>
       </section>
+
+      {/* Quick Info Strip */}
+      {(treatment.duration || treatment.hospitalStay || treatment.recoveryTime || treatment.successRate) && (
+        <section className="bg-white border-b border-slate-100 py-6 shadow-sm">
+          <div className="container-page">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-4 md:divide-x md:divide-slate-100 text-center">
+              {treatment.duration ? (
+                <div className="flex flex-col items-center justify-center">
+                  <span className="text-xs sm:text-sm font-semibold tracking-wider text-brand-teal mb-1">
+                    Duration
+                  </span>
+                  <span className="text-sm sm:text-base font-bold text-brand-dark">
+                    {treatment.duration}
+                  </span>
+                </div>
+              ) : (
+                <div className="hidden md:block"></div>
+              )}
+              {treatment.hospitalStay ? (
+                <div className="flex flex-col items-center justify-center">
+                  <span className="text-xs sm:text-sm font-semibold tracking-wider text-brand-teal mb-1">
+                    Hospital Stay
+                  </span>
+                  <span className="text-sm sm:text-base font-bold text-brand-dark">
+                    {treatment.hospitalStay}
+                  </span>
+                </div>
+              ) : (
+                <div className="hidden md:block"></div>
+              )}
+              {treatment.recoveryTime ? (
+                <div className="flex flex-col items-center justify-center">
+                  <span className="text-xs sm:text-sm font-semibold tracking-wider text-brand-teal mb-1">
+                    Recovery Time
+                  </span>
+                  <span className="text-sm sm:text-base font-bold text-brand-dark">
+                    {treatment.recoveryTime}
+                  </span>
+                </div>
+              ) : (
+                <div className="hidden md:block"></div>
+              )}
+              {treatment.successRate ? (
+                <div className="flex flex-col items-center justify-center">
+                  <span className="text-xs sm:text-sm font-semibold tracking-wider text-brand-teal mb-1">
+                    Success Rate
+                  </span>
+                  <span className="text-sm sm:text-base font-bold text-brand-dark">
+                    {treatment.successRate}
+                  </span>
+                </div>
+              ) : (
+                <div className="hidden md:block"></div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="py-14">
         <div className="container-page grid gap-10 lg:grid-cols-[1.7fr_1fr]">
@@ -198,7 +257,6 @@ export default async function TreatmentDetailPage({
                 className="relative flex items-center justify-center w-full rounded-full bg-brand-blue py-3.5 text-sm font-semibold text-white transition hover:brightness-105 shadow-sm"
               >
                 Speak to Our Care Team Now
-
               </Link>
 
               <div className="text-[10px] text-slate-500 leading-relaxed mt-6 space-y-2 text-center">
@@ -212,6 +270,22 @@ export default async function TreatmentDetailPage({
         </div>
       </section>
 
+      {/* Testimonials Section */}
+      {treatment.testimonials && treatment.testimonials.length > 0 && (
+        <section className="bg-slate-50 py-16 border-t border-slate-100">
+          <div className="container-page">
+            <div className="text-center max-w-xl mx-auto mb-10">
+              <h2 className="text-2xl font-bold font-serif text-brand-dark">
+                Patient Stories & Reviews
+              </h2>
+              <p className="mt-2 text-sm text-slate-500">
+                Read real experiences from patients who underwent this treatment with us.
+              </p>
+            </div>
+            <TestimonialCarousel testimonials={treatment.testimonials} />
+          </div>
+        </section>
+      )}
       <CTABand
         title={`Suffering from ${conditionName}?`}
         subtitle="Don't wait for complications. Get expert advice and a clear treatment plan today."

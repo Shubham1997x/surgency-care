@@ -9,6 +9,7 @@ import { getImageSettings } from "@/lib/settings";
 import { DoctorCard } from "@/components/Cards";
 import { parseList } from "@/lib/utils";
 import { IconCheck, IconBed, IconHospital, IconClock, IconStar, IconPhone } from "@/components/Icons";
+import { AnimatedNumber } from "@/components/AnimatedNumber";
 
 export async function generateMetadata({
   params,
@@ -92,8 +93,8 @@ export default async function HospitalDetailPage({
               </a>
             </div>
           </div>
-          <div className="bg-white/10 p-6 rounded-[2.5rem] border border-white/15 shadow-2xl backdrop-blur-sm">
-            <div className={`relative w-full overflow-hidden rounded-2xl ring-2 ring-white/10 ${hospSetting.aspectRatio}`}>
+          <div className="relative overflow-hidden rounded-[2rem] shadow-2xl ring-4 ring-white/10 transition-transform duration-300 hover:scale-[1.01]">
+            <div className={`relative w-full overflow-hidden ${hospSetting.aspectRatio}`}>
               <HospitalSlideshow imageString={hospital.image} alt={hospital.name} objectFit={hospSetting.objectFit} />
             </div>
           </div>
@@ -105,8 +106,8 @@ export default async function HospitalDetailPage({
         <div className="container-page grid grid-cols-2 gap-8 md:grid-cols-4 text-center">
           {facts.map((f) => (
             <div key={f.label} className="flex flex-col items-center justify-center">
-              <span className={`text-4xl font-extrabold tracking-tight ${f.colorClass}`}>
-                {f.value}
+              <span className={`font-serif text-4xl font-bold ${f.colorClass}`}>
+                <AnimatedNumber value={f.value} />
               </span>
               <span className="mt-2 text-sm font-semibold text-slate-500">
                 {f.label}

@@ -6,10 +6,55 @@ import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { saveImageSettings } from "@/lib/settings";
 import { slugify, linesToJSON } from "@/lib/utils";
+import { rename, unlink } from "fs/promises";
+import path from "path";
 
 async function requireAdmin() {
   const session = await getSession();
   if (!session) redirect("/login");
+}
+
+async function deleteLocalFile(fileUrl: string | null) {
+  if (!fileUrl || !fileUrl.startsWith("/uploads/")) return;
+  const filename = fileUrl.substring("/uploads/".length);
+  const filePath = path.join(process.cwd(), "public", "uploads", filename);
+  try {
+    await unlink(filePath);
+  } catch (error) {
+    // Ignore error if file doesn't exist
+    console.error("Failed to delete local file:", error);
+  }
+}
+
+async function renameUploadedImage(
+  oldUrl: string | null,
+  newSlug: string,
+  prefix: string
+): Promise<string | null> {
+  if (!oldUrl || !oldUrl.startsWith("/uploads/")) return oldUrl;
+
+  const oldFilename = oldUrl.substring("/uploads/".length);
+  const prefixMatch = `${prefix}-${newSlug}-`;
+  
+  // If the file is already renamed with a timestamp under this prefix and slug, keep it
+  if (oldFilename.startsWith(prefixMatch)) {
+    return oldUrl;
+  }
+
+  const ext = (oldFilename.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+  const newFilename = `${prefix}-${newSlug}-${Date.now()}.${ext}`;
+
+  const publicDir = path.join(process.cwd(), "public", "uploads");
+  const oldPath = path.join(publicDir, oldFilename);
+  const newPath = path.join(publicDir, newFilename);
+
+  try {
+    await rename(oldPath, newPath);
+    return `/uploads/${newFilename}`;
+  } catch (error) {
+    console.error("Failed to rename image file:", error);
+    return oldUrl;
+  }
 }
 
 /** Ensure a slug is unique within a model; append -2, -3… if taken. */
@@ -58,11 +103,14 @@ export async function saveHospital(formData: FormData) {
       })
   );
 
+  const rawImage = str(formData, "image") || null;
+  const image = await renameUploadedImage(rawImage, slug, "hospital");
+
   const data = {
     slug,
     name,
     location: str(formData, "location"),
-    image: str(formData, "image") || null,
+    image,
     accreditation: str(formData, "accreditation") || "NABH Accredited",
     about: str(formData, "about"),
     beds: int(formData, "beds"),
@@ -74,8 +122,15 @@ export async function saveHospital(formData: FormData) {
     featured: bool(formData, "featured"),
   };
 
-  if (id) await prisma.hospital.update({ where: { id }, data });
-  else await prisma.hospital.create({ data });
+  if (id) {
+    const existing = await prisma.hospital.findUnique({ where: { id } });
+    if (existing && existing.image && existing.image !== image) {
+      await deleteLocalFile(existing.image);
+    }
+    await prisma.hospital.update({ where: { id }, data });
+  } else {
+    await prisma.hospital.create({ data });
+  }
 
   revalidatePath("/dashboard/hospitals");
   revalidatePath("/hospitals");
@@ -84,7 +139,12 @@ export async function saveHospital(formData: FormData) {
 
 export async function deleteHospital(formData: FormData) {
   await requireAdmin();
-  await prisma.hospital.delete({ where: { id: str(formData, "id") } });
+  const id = str(formData, "id");
+  const existing = await prisma.hospital.findUnique({ where: { id } });
+  if (existing && existing.image) {
+    await deleteLocalFile(existing.image);
+  }
+  await prisma.hospital.delete({ where: { id } });
   revalidatePath("/dashboard/hospitals");
   revalidatePath("/hospitals");
 }
@@ -97,12 +157,15 @@ export async function saveDoctor(formData: FormData) {
   const slug = await uniqueSlug("doctor", str(formData, "slug") || name, id || undefined);
   const hospitalId = str(formData, "hospitalId");
 
+  const rawImage = str(formData, "image") || null;
+  const image = await renameUploadedImage(rawImage, slug, "doctor");
+
   const data = {
     slug,
     name,
     title: str(formData, "title"),
     primarySpecialty: str(formData, "primarySpecialty"),
-    image: str(formData, "image") || null,
+    image,
     about: str(formData, "about"),
     experienceYears: int(formData, "experienceYears"),
     rating: num(formData, "rating"),
@@ -114,8 +177,15 @@ export async function saveDoctor(formData: FormData) {
     hospitalId: hospitalId || null,
   };
 
-  if (id) await prisma.doctor.update({ where: { id }, data });
-  else await prisma.doctor.create({ data });
+  if (id) {
+    const existing = await prisma.doctor.findUnique({ where: { id } });
+    if (existing && existing.image && existing.image !== image) {
+      await deleteLocalFile(existing.image);
+    }
+    await prisma.doctor.update({ where: { id }, data });
+  } else {
+    await prisma.doctor.create({ data });
+  }
 
   revalidatePath("/dashboard/doctors");
   revalidatePath("/doctors");
@@ -124,7 +194,12 @@ export async function saveDoctor(formData: FormData) {
 
 export async function deleteDoctor(formData: FormData) {
   await requireAdmin();
-  await prisma.doctor.delete({ where: { id: str(formData, "id") } });
+  const id = str(formData, "id");
+  const existing = await prisma.doctor.findUnique({ where: { id } });
+  if (existing && existing.image) {
+    await deleteLocalFile(existing.image);
+  }
+  await prisma.doctor.delete({ where: { id } });
   revalidatePath("/dashboard/doctors");
   revalidatePath("/doctors");
 }
@@ -168,6 +243,9 @@ export async function saveTreatment(formData: FormData) {
   const slug = await uniqueSlug("treatment", str(formData, "slug") || name, id || undefined);
   const categoryId = str(formData, "categoryId");
 
+  const rawImage = str(formData, "image") || null;
+  const image = await renameUploadedImage(rawImage, slug, "treatment");
+
   const data = {
     slug,
     name,
@@ -175,10 +253,14 @@ export async function saveTreatment(formData: FormData) {
     tagline: str(formData, "tagline"),
     shortDesc: str(formData, "shortDesc"),
     heroDesc: str(formData, "heroDesc"),
-    image: str(formData, "image") || null,
+    image,
     costMin: int(formData, "costMin"),
     costMax: int(formData, "costMax"),
     recoveryNote: str(formData, "recoveryNote"),
+    duration: str(formData, "duration"),
+    hospitalStay: str(formData, "hospitalStay"),
+    recoveryTime: str(formData, "recoveryTime"),
+    successRate: str(formData, "successRate"),
     symptoms: linesToJSON(str(formData, "symptoms")),
     procedureSteps: linesToJSON(str(formData, "procedureSteps")),
     benefits: linesToJSON(str(formData, "benefits")),
@@ -187,8 +269,15 @@ export async function saveTreatment(formData: FormData) {
     categoryId: categoryId || null,
   };
 
-  if (id) await prisma.treatment.update({ where: { id }, data });
-  else await prisma.treatment.create({ data });
+  if (id) {
+    const existing = await prisma.treatment.findUnique({ where: { id } });
+    if (existing && existing.image && existing.image !== image) {
+      await deleteLocalFile(existing.image);
+    }
+    await prisma.treatment.update({ where: { id }, data });
+  } else {
+    await prisma.treatment.create({ data });
+  }
 
   revalidatePath("/dashboard/treatments");
   revalidatePath("/treatments");
@@ -197,7 +286,12 @@ export async function saveTreatment(formData: FormData) {
 
 export async function deleteTreatment(formData: FormData) {
   await requireAdmin();
-  await prisma.treatment.delete({ where: { id: str(formData, "id") } });
+  const id = str(formData, "id");
+  const existing = await prisma.treatment.findUnique({ where: { id } });
+  if (existing && existing.image) {
+    await deleteLocalFile(existing.image);
+  }
+  await prisma.treatment.delete({ where: { id } });
   revalidatePath("/dashboard/treatments");
   revalidatePath("/treatments");
 }
@@ -209,20 +303,30 @@ export async function saveBlog(formData: FormData) {
   const title = str(formData, "title");
   const slug = await uniqueSlug("blog", str(formData, "slug") || title, id || undefined);
 
+  const rawImage = str(formData, "coverImage") || null;
+  const coverImage = await renameUploadedImage(rawImage, slug, "blog");
+
   const data = {
     slug,
     title,
     category: str(formData, "category") || "General Surgery",
     excerpt: str(formData, "excerpt"),
     content: str(formData, "content"),
-    coverImage: str(formData, "coverImage") || null,
+    coverImage,
     author: str(formData, "author") || "Surgency Care Team",
     readTime: str(formData, "readTime") || "5 min read",
     featured: bool(formData, "featured"),
   };
 
-  if (id) await prisma.blog.update({ where: { id }, data });
-  else await prisma.blog.create({ data });
+  if (id) {
+    const existing = await prisma.blog.findUnique({ where: { id } });
+    if (existing && existing.coverImage && existing.coverImage !== coverImage) {
+      await deleteLocalFile(existing.coverImage);
+    }
+    await prisma.blog.update({ where: { id }, data });
+  } else {
+    await prisma.blog.create({ data });
+  }
 
   revalidatePath("/dashboard/blogs");
   revalidatePath("/blogs");
@@ -231,7 +335,12 @@ export async function saveBlog(formData: FormData) {
 
 export async function deleteBlog(formData: FormData) {
   await requireAdmin();
-  await prisma.blog.delete({ where: { id: str(formData, "id") } });
+  const id = str(formData, "id");
+  const existing = await prisma.blog.findUnique({ where: { id } });
+  if (existing && existing.coverImage) {
+    await deleteLocalFile(existing.coverImage);
+  }
+  await prisma.blog.delete({ where: { id } });
   revalidatePath("/dashboard/blogs");
   revalidatePath("/blogs");
 }
@@ -259,8 +368,15 @@ export async function saveTestimonial(formData: FormData) {
     treatmentId: str(formData, "treatmentId") || null,
   };
 
-  if (id) await prisma.testimonial.update({ where: { id }, data });
-  else await prisma.testimonial.create({ data });
+  if (id) {
+    const existing = await prisma.testimonial.findUnique({ where: { id } });
+    if (existing && existing.image && existing.image !== data.image) {
+      await deleteLocalFile(existing.image);
+    }
+    await prisma.testimonial.update({ where: { id }, data });
+  } else {
+    await prisma.testimonial.create({ data });
+  }
 
   revalidatePath("/dashboard/testimonials");
   revalidatePath("/testimonials");
@@ -270,7 +386,12 @@ export async function saveTestimonial(formData: FormData) {
 
 export async function deleteTestimonial(formData: FormData) {
   await requireAdmin();
-  await prisma.testimonial.delete({ where: { id: str(formData, "id") } });
+  const id = str(formData, "id");
+  const existing = await prisma.testimonial.findUnique({ where: { id } });
+  if (existing && existing.image) {
+    await deleteLocalFile(existing.image);
+  }
+  await prisma.testimonial.delete({ where: { id } });
   revalidatePath("/dashboard/testimonials");
   revalidatePath("/testimonials");
   revalidatePath("/");

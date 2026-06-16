@@ -16,6 +16,7 @@ import {
   IconStar,
   IconUsers,
 } from "@/components/Icons";
+import { AnimatedNumber } from "@/components/AnimatedNumber";
 
 const stats = [
   { value: "36+", label: "Surgical Specialties" },
@@ -62,15 +63,24 @@ const whyUs = [
 
 export default async function HomePage() {
   const [categories, doctors, hospitals, blogs] = await Promise.all([
-    prisma.treatmentCategory.findMany({ orderBy: { createdAt: "asc" }, take: 8 }),
+    prisma.treatmentCategory.findMany({
+      orderBy: [{ featured: "desc" }, { createdAt: "asc" }],
+      take: 8,
+    }),
     prisma.doctor.findMany({
       where: { featured: true },
       include: { hospital: true },
       take: 3,
       orderBy: { createdAt: "asc" },
     }),
-    prisma.hospital.findMany({ orderBy: { rating: "desc" }, take: 3 }),
-    prisma.blog.findMany({ orderBy: { publishedAt: "desc" }, take: 3 }),
+    prisma.hospital.findMany({
+      orderBy: [{ featured: "desc" }, { rating: "desc" }],
+      take: 3,
+    }),
+    prisma.blog.findMany({
+      orderBy: [{ featured: "desc" }, { publishedAt: "desc" }],
+      take: 3,
+    }),
   ]);
 
   return (
@@ -150,7 +160,9 @@ export default async function HomePage() {
         <div className="container-page grid grid-cols-2 gap-6 py-10 md:grid-cols-4">
           {stats.map((s) => (
             <div key={s.label} className="text-center">
-              <p className="font-serif text-3xl font-bold text-brand-dark">{s.value}</p>
+              <p className="font-serif text-3xl font-bold text-brand-dark">
+                <AnimatedNumber value={s.value} />
+              </p>
               <p className="mt-1 text-sm text-slate-500">{s.label}</p>
             </div>
           ))}

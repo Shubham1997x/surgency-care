@@ -1,94 +1,76 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Media } from "./Media";
-import { IconStethoscope } from "./Icons";
+import { Testimonial } from "@prisma/client";
+import { IconStar } from "./Icons";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-interface Testimonial {
-  id: string;
-  name: string;
-  image: string | null;
-  text: string;
-  time: string;
-  rating: number;
+interface TestimonialCarouselProps {
+  testimonials: Testimonial[];
 }
 
-export function TestimonialCarousel({ testimonials }: { testimonials: Testimonial[] }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(3); // Default to 3 for desktop SSR
+export function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) {
+  const [startIndex, setStartIndex] = useState(0);
+  const [itemsPerView, setItemsPerView] = useState(3);
+
+  const total = testimonials.length;
+  const showCarousel = total > 3;
 
   useEffect(() => {
+    if (!showCarousel) return;
     const handleResize = () => {
-      if (window.innerWidth < 640) {
-        setItemsPerPage(1);
+      if (window.innerWidth < 768) {
+        setItemsPerView(1);
       } else if (window.innerWidth < 1024) {
-        setItemsPerPage(2);
+        setItemsPerView(2);
       } else {
-        setItemsPerPage(3);
+        setItemsPerView(3);
       }
     };
-
-    // Initialize on mount
     handleResize();
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [showCarousel]);
 
-  if (testimonials.length === 0) return null;
+  // Adjust startIndex if window resized and startIndex is out of bounds
+  const maxIndex = Math.max(0, total - itemsPerView);
+  useEffect(() => {
+    if (startIndex > maxIndex) {
+      setStartIndex(maxIndex);
+    }
+  }, [itemsPerView, maxIndex, startIndex]);
 
-  // If items are fewer than or equal to what we can display, render a static grid
-  if (testimonials.length <= itemsPerPage) {
+  const handleNext = () => {
+    setStartIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+  };
+
+  const handlePrev = () => {
+    setStartIndex((prev) => (prev <= 0 ? maxIndex : prev - 1));
+  };
+
+  // If 3 or less, display them in a standard responsive grid
+  if (!showCarousel) {
     return (
-      <div className={`grid gap-6 ${
-        itemsPerPage === 1 ? "grid-cols-1" : itemsPerPage === 2 ? "grid-cols-2" : "grid-cols-3"
-      }`}>
-        {testimonials.map((t) => (
-          <TestimonialCard key={t.id} testimonial={t} />
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {testimonials.map((t, idx) => (
+          <TestimonialCard key={t.id ?? idx} testimonial={t} />
         ))}
       </div>
     );
   }
 
-  // Calculate sliding bounds (limit index so we don't slide into empty space)
-  const maxIndex = Math.max(0, testimonials.length - itemsPerPage);
-
-  // Auto-adjust index if itemsPerPage changes and index is out of bounds
-  if (currentIndex > maxIndex) {
-    setCurrentIndex(maxIndex);
-  }
-
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev <= 0 ? maxIndex : prev - 1));
-  };
-
   return (
-    <div className="relative px-4 sm:px-12">
-      {/* Navigation Buttons */}
-      <button
-        onClick={prevSlide}
-        className="absolute left-0 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-md transition hover:bg-slate-50 hover:text-brand-dark z-20"
-        aria-label="Previous testimonials"
-      >
-        ‹
-      </button>
-
-      {/* Sliding Track Viewport */}
-      <div className="overflow-hidden px-1 -mx-3">
+    <div className="relative px-4 md:px-12">
+      {/* Testimonials Grid Slider */}
+      <div className="overflow-hidden -mx-3">
         <div
-          className="flex transition-transform duration-500 ease-in-out [--slide-width:100%] sm:[--slide-width:50%] lg:[--slide-width:33.333333%]"
-          style={{
-            transform: `translate3d(calc(-1 * var(--slide-width) * ${currentIndex}), 0, 0)`,
-          } as React.CSSProperties}
+          className="flex transition-transform duration-500 ease-out"
+          style={{ transform: `translateX(-${startIndex * (100 / itemsPerView)}%)` }}
         >
-          {testimonials.map((t) => (
+          {testimonials.map((t, idx) => (
             <div
-              key={t.id}
-              className="w-full sm:w-1/2 lg:w-1/3 shrink-0 px-3"
+              key={t.id ?? idx}
+              className="w-full flex-shrink-0 md:w-1/2 lg:w-1/3 px-3"
             >
               <TestimonialCard testimonial={t} />
             </div>
@@ -96,22 +78,30 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
         </div>
       </div>
 
+      {/* Navigation Buttons */}
       <button
-        onClick={nextSlide}
-        className="absolute right-0 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-md transition hover:bg-slate-50 hover:text-brand-dark z-20"
+        onClick={handlePrev}
+        className="absolute left-[-10px] md:left-0 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white border border-slate-200 shadow-md text-slate-600 hover:text-brand-blue hover:bg-slate-50 transition z-30"
+        aria-label="Previous testimonials"
+      >
+        <ChevronLeft className="h-5 w-5" />
+      </button>
+      <button
+        onClick={handleNext}
+        className="absolute right-[-10px] md:right-0 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white border border-slate-200 shadow-md text-slate-600 hover:text-brand-blue hover:bg-slate-50 transition z-30"
         aria-label="Next testimonials"
       >
-        ›
+        <ChevronRight className="h-5 w-5" />
       </button>
 
       {/* Indicators */}
-      <div className="mt-8 flex justify-center gap-1.5 flex-wrap">
+      <div className="mt-8 flex justify-center gap-2">
         {Array.from({ length: maxIndex + 1 }).map((_, idx) => (
           <button
             key={idx}
-            onClick={() => setCurrentIndex(idx)}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              currentIndex === idx ? "w-6 bg-brand-teal" : "w-2 bg-slate-200"
+            onClick={() => setStartIndex(idx)}
+            className={`h-2 w-2 rounded-full transition-all ${
+              idx === startIndex ? "w-4 bg-brand-blue" : "bg-slate-200 hover:bg-slate-300"
             }`}
             aria-label={`Go to slide ${idx + 1}`}
           />
@@ -121,31 +111,31 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
   );
 }
 
-function TestimonialCard({ testimonial: t }: { testimonial: Testimonial }) {
+function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
   return (
-    <div className="card p-6 flex flex-col justify-between h-full min-h-[220px] shadow-sm border border-slate-100/50">
+    <div className="card flex flex-col justify-between p-8 bg-white shadow-sm transition-all duration-300 hover:shadow-md h-full min-h-[240px]">
       <div>
-        <div className="flex gap-1 mb-3">
-          {Array.from({ length: Math.round(t.rating) }).map((_, i) => (
-            <span key={i} className="text-brand-orange text-sm">★</span>
+        <div className="mb-6 flex items-center gap-3">
+          {testimonial.image ? (
+            <img src={testimonial.image} alt={testimonial.name} className="h-12 w-12 rounded-full object-cover border-2 border-slate-100" />
+          ) : (
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-slate-500 border-2 border-slate-100">
+              {testimonial.name.substring(0, 2).toUpperCase()}
+            </div>
+          )}
+          <div>
+            <h3 className="text-sm font-semibold text-brand-dark">{testimonial.name}</h3>
+            <p className="text-xs text-slate-400">{testimonial.time}</p>
+          </div>
+        </div>
+        <div className="mb-4 flex gap-1 text-brand-orange">
+          {Array.from({ length: Math.round(testimonial.rating ?? 5) }).map((_, i) => (
+            <IconStar key={i} className="h-4 w-4 fill-current" />
           ))}
         </div>
-        <p className="text-sm italic text-slate-600 leading-relaxed line-clamp-4">&ldquo;{t.text}&rdquo;</p>
-      </div>
-      <div className="mt-6 flex items-center gap-3 border-t border-slate-100 pt-4">
-        {t.image && t.image.trim() !== "" ? (
-          <div className="relative h-10 w-10 overflow-hidden rounded-full ring-2 ring-slate-100">
-            <Media src={t.image} alt={t.name} className="h-full w-full object-cover" />
-          </div>
-        ) : (
-          <div className="h-10 w-10 bg-brand-teal/10 flex items-center justify-center rounded-full text-brand-dark font-bold text-sm">
-            {t.name[0]}
-          </div>
-        )}
-        <div>
-          <h4 className="font-semibold text-sm text-brand-dark">{t.name}</h4>
-          <p className="text-xs text-slate-400">{t.time}</p>
-        </div>
+        <p className="text-sm leading-relaxed text-slate-600 italic">
+          &ldquo;{testimonial.text}&rdquo;
+        </p>
       </div>
     </div>
   );

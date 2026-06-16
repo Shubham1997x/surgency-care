@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHero, SectionHeading, CTABand } from "@/components/Sections";
 import { IconShield, IconHeart, IconStar, IconCheck } from "@/components/Icons";
+import { AnimatedNumber } from "@/components/AnimatedNumber";
 
 export const metadata: Metadata = { title: "About Us" };
 
@@ -18,17 +19,17 @@ const promises = [
 ];
 
 const stats = [
-  { value: "1200+", label: "Surgeries Facilitated" },
-  { value: "85+", label: "Expert Surgeons" },
-  { value: "25+", label: "Partner Hospitals" },
-  { value: "4.9", label: "Average Rating" },
+  { value: "1200+", label: "Surgeries Facilitated", colorClass: "text-[#0ED3B0]" },
+  { value: "85+", label: "Expert Surgeons", colorClass: "text-[#4E97FD]" },
+  { value: "25+", label: "Partner Hospitals", colorClass: "text-[#FF9700]" },
+  { value: "4.9", label: "Average Rating", colorClass: "text-[#0E606E]" },
 ];
 
 export default function AboutPage() {
   return (
     <>
       <PageHero
-        eyebrow="Who We Are"
+        eyebrow="Our Story"
         title="Compassionate Surgical Care That You Can Truly Trust"
         subtitle="We are a team of healthcare professionals dedicated to making advanced surgery simple, affordable and stress-free for families across Delhi-NCR and India."
       />
@@ -36,7 +37,7 @@ export default function AboutPage() {
       <section className="py-16">
         <div className="container-page grid gap-10 lg:grid-cols-2">
           <div>
-            <SectionHeading center={false} eyebrow="Our Mission" title="Care Without Compromise" />
+            <SectionHeading center={false} title="Our Mission" />
             <p className="mt-4 text-slate-600">
               At Surgency Care, we believe no one should face the anxiety of surgery alone. We
               connect patients with verified specialists and NABH-accredited hospitals so you receive
@@ -84,7 +85,9 @@ export default function AboutPage() {
           <div className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-4">
             {stats.map((s) => (
               <div key={s.label} className="text-center">
-                <p className="font-serif text-4xl font-bold text-brand-teal">{s.value}</p>
+                <p className={`font-serif text-4xl font-bold ${s.colorClass}`}>
+                  <AnimatedNumber value={s.value} />
+                </p>
                 <p className="mt-1 text-sm text-slate-500">{s.label}</p>
               </div>
             ))}

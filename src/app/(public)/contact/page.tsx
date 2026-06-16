@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
 import { ConsultationForm } from "@/components/ConsultationForm";
 import { IconPhone, IconChat, IconMapPin } from "@/components/Icons";
+import { prisma } from "@/lib/db";
 
 export const metadata: Metadata = { title: "Contact Us — Book a Free Consultation" };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const treatments = await prisma.treatment.findMany({
+    select: { name: true, slug: true },
+    orderBy: { name: "asc" },
+  });
+
   return (
     <>
       <section className="hero-gradient">
@@ -31,7 +37,7 @@ export default function ContactPage() {
               Fill the form below and our team will call you within 15 minutes.
             </p>
             <div className="mt-6">
-              <ConsultationForm source="contact" compact />
+              <ConsultationForm source="contact" compact treatments={treatments} />
             </div>
           </div>
 

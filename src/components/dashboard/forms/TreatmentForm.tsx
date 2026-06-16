@@ -40,6 +40,13 @@ export function TreatmentForm({
         <Field label="Recovery Note" name="recoveryNote" defaultValue={treatment?.recoveryNote} placeholder="Resume work in a week" />
       </div>
 
+      <div className="grid gap-5 sm:grid-cols-4">
+        <Field label="Duration" name="duration" defaultValue={treatment?.duration ?? ""} placeholder="45-60 minutes" />
+        <Field label="Hospital Stay" name="hospitalStay" defaultValue={treatment?.hospitalStay ?? ""} placeholder="Same day or 1 night" />
+        <Field label="Recovery Time" name="recoveryTime" defaultValue={treatment?.recoveryTime ?? ""} placeholder="3-7 days" />
+        <Field label="Success Rate" name="successRate" defaultValue={treatment?.successRate ?? ""} placeholder="98%+" />
+      </div>
+
       <TextArea label="Common Symptoms" name="symptoms" rows={4} defaultValue={jsonToLines(treatment?.symptoms)} hint="One per line." />
       <TextArea label="Procedure Steps" name="procedureSteps" rows={4} defaultValue={jsonToLines(treatment?.procedureSteps)} hint="One step per line." />
       <TextArea label="Benefits" name="benefits" rows={4} defaultValue={jsonToLines(treatment?.benefits)} hint="One per line." />

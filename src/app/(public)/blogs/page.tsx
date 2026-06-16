@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import { PageHero, CTABand } from "@/components/Sections";
-import { BlogCard } from "@/components/Cards";
+import { BlogList } from "@/components/BlogList";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Latest Health Insights, Surgery Guides & Recovery Tips",
@@ -23,11 +25,7 @@ export default async function BlogsPage() {
           {blogs.length === 0 ? (
             <p className="text-center text-slate-500">No articles published yet.</p>
           ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {blogs.map((b) => (
-                <BlogCard key={b.id} blog={b} />
-              ))}
-            </div>
+            <BlogList initialBlogs={blogs} />
           )}
         </div>
       </section>

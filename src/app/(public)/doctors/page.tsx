@@ -3,6 +3,8 @@ import { prisma } from "@/lib/db";
 import { PageHero, CTABand } from "@/components/Sections";
 import { DoctorFilterList } from "@/components/DoctorFilterList";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Verified & Experienced Surgeons You Can Trust",
 };
