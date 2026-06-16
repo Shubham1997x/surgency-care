@@ -4,6 +4,38 @@ import { useActionState, useState } from "react";
 import { submitLead, type LeadResult } from "@/app/actions/leads";
 import { IconCheck, IconPhone } from "./Icons";
 
+type FieldErrors = {
+  name?: string;
+  phone?: string;
+  city?: string;
+  condition?: string;
+};
+
+function validateName(v: string) {
+  if (!v) return "Full name is required";
+  if (v.length < 3) return "Name must be at least 3 characters";
+  if (!/^[a-zA-Z\s'.'-]+$/.test(v)) return "Name can only contain letters and spaces";
+  return undefined;
+}
+
+function validatePhone(v: string) {
+  if (!v) return "Phone number is required";
+  const digits = v.replace(/[\s\-+()]/g, "");
+  if (!/^\d{10,13}$/.test(digits)) return "Enter a valid 10-digit phone number";
+  return undefined;
+}
+
+function validateCity(v: string) {
+  if (v && v.length < 2) return "City must be at least 2 characters";
+  return undefined;
+}
+
+function validateCondition(v: string) {
+  if (!v) return "Please select or enter your condition / treatment needed";
+  if (v.length < 2) return "Please describe your condition briefly";
+  return undefined;
+}
+
 export function ConsultationForm({
   source = "contact",
   conditionDefault = "",
@@ -20,45 +52,39 @@ export function ConsultationForm({
     null
   );
 
-  const [errors, setErrors] = useState<{
-    name?: string;
-    phone?: string;
-    city?: string;
-    condition?: string;
-  }>({});
+  const [errors, setErrors] = useState<FieldErrors>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  function clearError(field: keyof FieldErrors) {
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
+  }
+
+  function handleBlur(field: keyof FieldErrors, value: string) {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    const validators = { name: validateName, phone: validatePhone, city: validateCity, condition: validateCondition };
+    const err = validators[field](value);
+    setErrors((prev) => ({ ...prev, [field]: err }));
+  }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    const formData = new FormData(e.currentTarget);
-    const name = String(formData.get("name") || "").trim();
-    const phone = String(formData.get("phone") || "").trim();
-    const city = String(formData.get("city") || "").trim();
-    const condition = String(formData.get("condition") || "").trim();
+    const fd = new FormData(e.currentTarget);
+    const name = String(fd.get("name") || "").trim();
+    const phone = String(fd.get("phone") || "").trim();
+    const city = String(fd.get("city") || "").trim();
+    const condition = String(fd.get("condition") || "").trim();
 
-    const newErrors: typeof errors = {};
+    const newErrors: FieldErrors = {
+      name: validateName(name),
+      phone: validatePhone(phone),
+      city: validateCity(city),
+      condition: validateCondition(condition),
+    };
 
-    if (!name) {
-      newErrors.name = "Full name is required";
-    } else if (name.length < 3) {
-      newErrors.name = "Name must be at least 3 characters";
-    }
-
-    if (!phone) {
-      newErrors.phone = "Phone number is required";
-    } else if (!/^\+?[\d\s-]{10,15}$/.test(phone.replace(/[\s-]/g, ""))) {
-      newErrors.phone = "Please enter a valid phone number (10-12 digits)";
-    }
-
-    if (city && city.length < 2) {
-      newErrors.city = "City must be at least 2 characters";
-    }
-
-    if (condition && condition.length < 2) {
-      newErrors.condition = "Condition must be at least 2 characters";
-    }
-
-    if (Object.keys(newErrors).length > 0) {
+    const hasErrors = Object.values(newErrors).some(Boolean);
+    if (hasErrors) {
       e.preventDefault();
       setErrors(newErrors);
+      setTouched({ name: true, phone: true, city: true, condition: true });
     } else {
       setErrors({});
     }
@@ -78,63 +104,97 @@ export function ConsultationForm({
     );
   }
 
+  const fieldClass = (field: keyof FieldErrors) =>
+    `field-input ${touched[field] && errors[field] ? "border-red-400 focus:border-red-500 focus:ring-red-200" : touched[field] && !errors[field] ? "border-green-400 focus:border-green-500 focus:ring-green-100" : ""}`;
+
   return (
-    <form action={action} onSubmit={handleSubmit} className="space-y-4">
+    <form action={action} onSubmit={handleSubmit} noValidate className="space-y-4">
       <input type="hidden" name="source" value={source} />
+
       <div className={compact ? "grid gap-4 sm:grid-cols-2" : "space-y-4"}>
+        {/* Full Name */}
         <div>
-          <label className="field-label font-medium text-slate-700">Full Name *</label>
+          <label className="field-label font-medium text-slate-700">
+            Full Name <span className="text-red-500">*</span>
+          </label>
           <input
             name="name"
             placeholder="Enter your name"
-            className={`field-input ${errors.name ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
+            className={fieldClass("name")}
+            onChange={(e) => clearError("name")}
+            onBlur={(e) => handleBlur("name", e.target.value.trim())}
           />
-          {errors.name && (
-            <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-red-500">
-              <span className="text-[10px]">⚠️</span> {errors.name}
+          {touched.name && errors.name && (
+            <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-red-500">
+              <span>⚠</span> {errors.name}
+            </p>
+          )}
+          {touched.name && !errors.name && (
+            <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-green-600">
+              <span>✓</span> Looks good
             </p>
           )}
         </div>
+
+        {/* Phone */}
         <div>
-          <label className="field-label font-medium text-slate-700">Phone Number *</label>
+          <label className="field-label font-medium text-slate-700">
+            Phone Number <span className="text-red-500">*</span>
+          </label>
           <input
             name="phone"
+            type="tel"
             placeholder="+91 00000 00000"
-            className={`field-input ${errors.phone ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
+            className={fieldClass("phone")}
+            onChange={(e) => clearError("phone")}
+            onBlur={(e) => handleBlur("phone", e.target.value.trim())}
           />
-          {errors.phone && (
-            <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-red-500">
-              <span className="text-[10px]">⚠️</span> {errors.phone}
+          {touched.phone && errors.phone && (
+            <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-red-500">
+              <span>⚠</span> {errors.phone}
+            </p>
+          )}
+          {touched.phone && !errors.phone && (
+            <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-green-600">
+              <span>✓</span> Looks good
             </p>
           )}
         </div>
       </div>
+
       <div className={compact ? "grid gap-4 sm:grid-cols-2" : "space-y-4"}>
+        {/* City */}
         <div>
           <label className="field-label font-medium text-slate-700">City / Location</label>
           <input
             name="city"
             placeholder="Ghaziabad"
-            className={`field-input ${errors.city ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
+            className={fieldClass("city")}
+            onChange={(e) => clearError("city")}
+            onBlur={(e) => handleBlur("city", e.target.value.trim())}
           />
-          {errors.city && (
-            <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-red-500">
-              <span className="text-[10px]">⚠️</span> {errors.city}
+          {touched.city && errors.city && (
+            <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-red-500">
+              <span>⚠</span> {errors.city}
             </p>
           )}
         </div>
+
+        {/* Condition */}
         <div>
-          <label className="field-label font-medium text-slate-700">Condition / Treatment Needed</label>
+          <label className="field-label font-medium text-slate-700">
+            Condition / Treatment Needed <span className="text-red-500">*</span>
+          </label>
           {treatments && treatments.length > 0 ? (
             <select
               name="condition"
-              className={`field-input bg-white ${errors.condition ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
+              className={`field-input bg-white ${touched.condition && errors.condition ? "border-red-400" : ""}`}
+              onChange={(e) => clearError("condition")}
+              onBlur={(e) => handleBlur("condition", e.target.value.trim())}
             >
               <option value="">Select a treatment...</option>
               {treatments.map((t) => (
-                <option key={t.slug} value={t.name}>
-                  {t.name}
-                </option>
+                <option key={t.slug} value={t.name}>{t.name}</option>
               ))}
               <option value="Other">Other / Not Listed</option>
             </select>
@@ -143,16 +203,20 @@ export function ConsultationForm({
               name="condition"
               defaultValue={conditionDefault}
               placeholder="e.g. Gallbladder Stone"
-              className={`field-input ${errors.condition ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
+              className={fieldClass("condition")}
+              onChange={(e) => clearError("condition")}
+              onBlur={(e) => handleBlur("condition", e.target.value.trim())}
             />
           )}
-          {errors.condition && (
-            <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-red-500">
-              <span className="text-[10px]">⚠️</span> {errors.condition}
+          {touched.condition && errors.condition && (
+            <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-red-500">
+              <span>⚠</span> {errors.condition}
             </p>
           )}
         </div>
       </div>
+
+      {/* Message */}
       <div>
         <label className="field-label font-medium text-slate-700">Brief Description (Optional)</label>
         <textarea
@@ -162,17 +226,18 @@ export function ConsultationForm({
           className="field-input resize-none"
         />
       </div>
-      {(state?.error || Object.keys(errors).length > 0) && (
+
+      {/* Server error */}
+      {state?.error && (
         <div className="flex items-start gap-2.5 rounded-xl bg-red-50 p-4 text-xs text-red-700 border border-red-100">
-          <span className="mt-0.5 text-sm flex-shrink-0">⚠️</span>
+          <span className="mt-0.5 flex-shrink-0">⚠</span>
           <div>
-            <span className="font-semibold block mb-0.5">Please check your details</span>
-            <span className="opacity-90 leading-normal">
-              {state?.error || "Some required fields are missing or incorrect. Please review the highlighted fields above."}
-            </span>
+            <span className="font-semibold block mb-0.5">Submission failed</span>
+            <span className="opacity-90 leading-normal">{state.error}</span>
           </div>
         </div>
       )}
+
       <button type="submit" disabled={pending} className="btn-blue w-full">
         <IconPhone className="h-4 w-4" />
         {pending ? "Submitting…" : "Submit & Get a Call Back"}

@@ -18,6 +18,9 @@ export async function submitLead(
   if (!name || !phone) {
     return { ok: false, error: "Please enter your name and phone number." };
   }
+  if (!condition) {
+    return { ok: false, error: "Please select or enter your condition / treatment needed." };
+  }
   if (!/^[+\d][\d\s-]{6,}$/.test(phone)) {
     return { ok: false, error: "Please enter a valid phone number." };
   }
