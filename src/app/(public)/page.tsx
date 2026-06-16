@@ -181,7 +181,7 @@ export default async function HomePage() {
                 { src: "https://surgencycare.com/wp-content/uploads/2026/05/Lipoma.png", label: "Lipoma", href: "/treatments/lipoma-removal-surgery" },
                 { src: "https://surgencycare.com/wp-content/uploads/2026/05/Lasik-e1778614006333.png", label: "Lasik", href: "/treatments/lasik-eye-surgery" },
                 { src: "https://surgencycare.com/wp-content/uploads/2026/05/Liposuction.png", label: "Liposuction", href: "/treatments/liposuction-body-contouring" },
-                { src: "https://surgencycare.com/wp-content/uploads/2026/05/Hernia.png", label: "Hernia", href: "/treatments/hernia-repair-laparoscopic" },
+                { src: "https://surgencycare.com/wp-content/uploads/2026/05/Hernia.png", label: "Hernia", href: "/treatments/hernia-repair" },
               ].map((s) => (
                 <Link
                   key={s.label}

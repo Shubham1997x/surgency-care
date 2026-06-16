@@ -8,7 +8,10 @@ export function BlogForm({ blog }: { blog?: Blog | null }) {
     <form action={saveBlog} className="card space-y-5 p-6">
       {blog && <input type="hidden" name="id" value={blog.id} />}
 
-      <Field label="Title" name="title" required defaultValue={blog?.title} placeholder="Gallbladder Stone Removal: What to Expect" />
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field label="Title" name="title" required defaultValue={blog?.title} placeholder="Gallbladder Stone Removal: What to Expect" />
+        <Field label="Slug (URL)" name="slug" defaultValue={blog?.slug} placeholder="Leave empty to auto-generate" hint="Changing this will break existing links" />
+      </div>
 
       <div className="grid gap-5 sm:grid-cols-3">
         <Field label="Category" name="category" defaultValue={blog?.category ?? "General Surgery"} placeholder="General Surgery" />

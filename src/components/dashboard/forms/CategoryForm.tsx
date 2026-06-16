@@ -16,7 +16,10 @@ export function CategoryForm({ category }: { category?: TreatmentCategory | null
     <form action={saveCategory} className="card space-y-5 p-6">
       {category && <input type="hidden" name="id" value={category.id} />}
 
-      <Field label="Name" name="name" required defaultValue={category?.name} placeholder="General & Laparoscopic Surgery" />
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field label="Name" name="name" required defaultValue={category?.name} placeholder="General & Laparoscopic Surgery" />
+        <Field label="Slug (URL)" name="slug" defaultValue={category?.slug} placeholder="Leave empty to auto-generate" hint="Changing this will break existing links" />
+      </div>
       <TextArea label="Description" name="description" rows={3} defaultValue={category?.description} />
 
       <div className="grid gap-5 sm:grid-cols-2">

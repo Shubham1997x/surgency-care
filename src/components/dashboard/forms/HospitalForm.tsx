@@ -15,8 +15,9 @@ export function HospitalForm({ hospital }: { hospital?: Hospital | null }) {
     <form action={saveHospital} className="card space-y-5 p-6">
       {hospital && <input type="hidden" name="id" value={hospital.id} />}
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-3">
         <Field label="Name" name="name" required defaultValue={hospital?.name} placeholder="Shri Ram Hospital" />
+        <Field label="Slug (URL)" name="slug" defaultValue={hospital?.slug} placeholder="Leave empty to auto-generate" hint="Changing this will break existing links" />
         <Field label="Location" name="location" defaultValue={hospital?.location} placeholder="Ghaziabad, Uttar Pradesh" />
       </div>
 

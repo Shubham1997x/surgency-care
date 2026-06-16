@@ -15,8 +15,9 @@ export function DoctorForm({
     <form action={saveDoctor} className="card space-y-5 p-6">
       {doctor && <input type="hidden" name="id" value={doctor.id} />}
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-3">
         <Field label="Full Name" name="name" required defaultValue={doctor?.name} placeholder="Dr. Rajesh Sharma" />
+        <Field label="Slug (URL)" name="slug" defaultValue={doctor?.slug} placeholder="Leave empty to auto-generate" hint="Changing this will break existing links" />
         <Field label="Title" name="title" defaultValue={doctor?.title} placeholder="Senior Consultant — General Surgery" />
       </div>
 

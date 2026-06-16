@@ -15,8 +15,9 @@ export function TreatmentForm({
     <form action={saveTreatment} className="card space-y-5 p-6">
       {treatment && <input type="hidden" name="id" value={treatment.id} />}
 
-      <div className="grid gap-5 sm:grid-cols-3">
+      <div className="grid gap-5 sm:grid-cols-4">
         <Field label="Name" name="name" required defaultValue={treatment?.name} placeholder="Gallbladder Stone Removal" />
+        <Field label="Slug (URL)" name="slug" defaultValue={treatment?.slug} placeholder="Leave empty to auto-generate" hint="Changing this will break existing links" />
         <Field label="Condition Name" name="conditionName" defaultValue={treatment?.conditionName} placeholder="Gallbladder Stones" />
         <Field label="Tagline" name="tagline" defaultValue={treatment?.tagline} placeholder="Laparoscopic Cholecystectomy" />
       </div>
