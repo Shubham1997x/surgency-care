@@ -9,12 +9,17 @@ export default async function EditBlogPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const blog = await prisma.blog.findUnique({ where: { id } });
+  const [blog, doctors, hospitals] = await Promise.all([
+    prisma.blog.findUnique({ where: { id } }),
+    prisma.doctor.findMany({ select: { id: true, name: true, primarySpecialty: true }, orderBy: { name: "asc" } }),
+    prisma.hospital.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
+  ]);
   if (!blog) notFound();
+
   return (
     <div>
       <PageHeader title="Edit Blog" subtitle={blog.title} />
-      <BlogForm blog={blog} />
+      <BlogForm blog={blog} doctors={doctors} hospitals={hospitals} />
     </div>
   );
 }

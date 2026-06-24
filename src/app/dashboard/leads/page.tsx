@@ -5,35 +5,42 @@ import { deleteLead } from "@/app/actions/admin";
 import { formatDate } from "@/lib/utils";
 import { LeadsFilter } from "@/components/dashboard/LeadsFilter";
 
-export default async function LeadsAdmin(props: { searchParams: Promise<{ range?: string; startDate?: string; endDate?: string }> }) {
+export default async function LeadsAdmin(props: {
+  searchParams: Promise<{
+    range?: string;
+    startDate?: string;
+    endDate?: string;
+    condition?: string;
+    city?: string;
+    source?: string;
+  }>;
+}) {
   const searchParams = await props.searchParams;
-  const { range, startDate, endDate } = searchParams;
-  
+  const { range, startDate, endDate, condition, city, source } = searchParams;
+
   const where: any = {};
-  
-  if (range && range !== 'all') {
+
+  if (range && range !== "all") {
     const now = new Date();
     const start = new Date();
-    
-    if (range === 'today') {
+
+    if (range === "today") {
       start.setHours(0, 0, 0, 0);
       where.createdAt = { gte: start };
-    } else if (range === '7d') {
+    } else if (range === "7d") {
       start.setDate(now.getDate() - 7);
       where.createdAt = { gte: start };
-    } else if (range === '30d') {
+    } else if (range === "30d") {
       start.setDate(now.getDate() - 30);
       where.createdAt = { gte: start };
-    } else if (range === 'thisMonth') {
+    } else if (range === "thisMonth") {
       start.setDate(1);
       start.setHours(0, 0, 0, 0);
       where.createdAt = { gte: start };
-    } else if (range === 'custom') {
+    } else if (range === "custom") {
       if (startDate || endDate) {
         where.createdAt = {};
-        if (startDate) {
-          where.createdAt.gte = new Date(startDate);
-        }
+        if (startDate) where.createdAt.gte = new Date(startDate);
         if (endDate) {
           const end = new Date(endDate);
           end.setHours(23, 59, 59, 999);
@@ -42,21 +49,36 @@ export default async function LeadsAdmin(props: { searchParams: Promise<{ range?
       }
     }
   }
-  
-  const leads = await prisma.lead.findMany({ 
-    where,
-    orderBy: { createdAt: "desc" } 
-  });
-  
+
+  if (condition) where.condition = condition;
+  if (city) where.city = city;
+  if (source) where.source = source;
+
+  const [leads, allConditions, allCities, allSources] = await Promise.all([
+    prisma.lead.findMany({ where, orderBy: { createdAt: "desc" } }),
+    prisma.lead.findMany({ select: { condition: true }, distinct: ["condition"], orderBy: { condition: "asc" } }),
+    prisma.lead.findMany({ select: { city: true }, distinct: ["city"], orderBy: { city: "asc" } }),
+    prisma.lead.findMany({ select: { source: true }, distinct: ["source"], orderBy: { source: "asc" } }),
+  ]);
+
+  const uniqueConditions = allConditions.map((l) => l.condition).filter(Boolean);
+  const uniqueCities = allCities.map((l) => l.city).filter(Boolean);
+  const uniqueSources = allSources.map((l) => l.source).filter(Boolean);
+
   return (
     <div>
       <PageHeader
         title="Consultation Leads"
         subtitle="Enquiries submitted through consultation and contact forms."
       />
-      
-      <LeadsFilter leads={leads} />
-      
+
+      <LeadsFilter
+        leads={leads}
+        uniqueConditions={uniqueConditions}
+        uniqueCities={uniqueCities}
+        uniqueSources={uniqueSources}
+      />
+
       {leads.length === 0 ? (
         <EmptyState message="No leads match your criteria." />
       ) : (
@@ -85,7 +107,9 @@ export default async function LeadsAdmin(props: { searchParams: Promise<{ range?
                   <td className="px-5 py-3 text-slate-600">{l.phone}</td>
                   <td className="px-5 py-3 text-slate-600">{l.city || "—"}</td>
                   <td className="px-5 py-3 text-slate-600">{l.condition || "—"}</td>
-                  <td className="px-5 py-3"><span className="badge bg-slate-100 text-slate-500">{l.source}</span></td>
+                  <td className="px-5 py-3">
+                    <span className="badge bg-slate-100 text-slate-500">{l.source}</span>
+                  </td>
                   <td className="px-5 py-3 text-slate-400">{formatDate(l.createdAt)}</td>
                   <td className="px-5 py-3 text-right">
                     <DeleteButton action={deleteLead} id={l.id} label={`lead from ${l.name}`} />

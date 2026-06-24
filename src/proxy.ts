@@ -5,7 +5,7 @@ const SECRET = new TextEncoder().encode(
   process.env.SESSION_SECRET || "dev-secret-please-change"
 );
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const token = req.cookies.get("sc_session")?.value;
   let valid = false;
   if (token) {

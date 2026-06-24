@@ -109,13 +109,13 @@ export default function PrivacyPage() {
             </p>
             <div className="mt-3 rounded-2xl bg-slate-50 p-6 border border-slate-100 shadow-sm space-y-2 text-sm text-slate-600">
               <p>
-                <strong className="text-slate-800">Email:</strong> privacy@surgencycare.com
+                <strong className="text-slate-800">Email:</strong> info@surgencycare.com
               </p>
               <p>
                 <strong className="text-slate-800">Phone:</strong> +91 97802 99802
               </p>
               <p>
-                <strong className="text-slate-800">Address:</strong> Plot No. 12, Sector 10, Vaishali, Ghaziabad, Uttar Pradesh 201010
+                <strong className="text-slate-800">Address:</strong> Ground floor, 479, Sector-38, Gurugram, Haryana 122001
               </p>
             </div>
           </div>

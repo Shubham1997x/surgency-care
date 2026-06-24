@@ -78,7 +78,7 @@ src/
     actions/           # server actions (auth, leads, admin CRUD)
   components/          # shared UI (cards, sections, icons, dashboard widgets)
   lib/                 # db client, auth/session, utilities
-  middleware.ts        # protects /dashboard routes
+  proxy.ts            # protects /dashboard routes
 ```
 
 ## Notes

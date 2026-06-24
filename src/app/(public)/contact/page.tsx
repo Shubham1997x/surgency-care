@@ -62,7 +62,9 @@ export default async function ContactPage() {
                 <p className="text-sm text-slate-500">Chat on WhatsApp</p>
                 <p className="font-semibold text-brand-dark">Instant Response</p>
                 <a
-                  href="https://wa.me/911234567890"
+                  href="https://wa.me/919780299802?text=Hi!%20I%20want%20to%20book%20free%20consultation."
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="mt-2 inline-flex rounded-full bg-[#25D366] px-4 py-2 text-xs font-semibold text-white"
                 >
                   Message us on WhatsApp
@@ -75,11 +77,11 @@ export default async function ContactPage() {
               </div>
               <div>
                 <p className="text-sm text-slate-500">Our Office</p>
-                <p className="font-semibold text-brand-dark">Ghaziabad, Uttar Pradesh</p>
+                <p className="font-semibold text-brand-dark">Gurugram, Haryana</p>
                 <p className="text-xs text-slate-400">
-                  Plot No. 10, Sector 9, Vaishali, Ghaziabad 201010
+                  Ground floor, 479, Sector-38, Gurugram, Haryana 122001
                 </p>
-                <p className="text-xs text-slate-400">Mon–Sun: 8:00 AM – 9:00 PM</p>
+                <p className="text-xs text-slate-400">Mon–Fri: 07:00–22:00 &nbsp;|&nbsp; Sat–Sun: 08:00–20:00</p>
               </div>
             </div>
           </div>

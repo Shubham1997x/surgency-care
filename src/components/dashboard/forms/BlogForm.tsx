@@ -1,9 +1,15 @@
-import type { Blog } from "@prisma/client";
+import type { Blog, Doctor, Hospital } from "@prisma/client";
 import { saveBlog } from "@/app/actions/admin";
 import { Field, TextArea, Checkbox, FormActions } from "@/components/dashboard/ui";
 import { ImageUpload } from "@/components/dashboard/ImageUpload";
 
-export function BlogForm({ blog }: { blog?: Blog | null }) {
+interface BlogFormProps {
+  blog?: Blog | null;
+  doctors?: Pick<Doctor, "id" | "name" | "primarySpecialty">[];
+  hospitals?: Pick<Hospital, "id" | "name">[];
+}
+
+export function BlogForm({ blog, doctors = [], hospitals = [] }: BlogFormProps) {
   return (
     <form action={saveBlog} className="card space-y-5 p-6">
       {blog && <input type="hidden" name="id" value={blog.id} />}
@@ -17,6 +23,30 @@ export function BlogForm({ blog }: { blog?: Blog | null }) {
         <Field label="Category" name="category" defaultValue={blog?.category ?? "General Surgery"} placeholder="General Surgery" />
         <Field label="Author" name="author" defaultValue={blog?.author ?? "Surgency Care Team"} />
         <Field label="Read Time" name="readTime" defaultValue={blog?.readTime ?? "5 min read"} placeholder="5 min read" />
+      </div>
+
+      <div className="grid gap-5 sm:grid-cols-2">
+        <div className="field-group">
+          <label className="field-label">Tag to Doctor <span className="text-slate-400 font-normal">(optional)</span></label>
+          <select name="doctorId" defaultValue={blog?.doctorId ?? ""} className="field-input">
+            <option value="">— None —</option>
+            {doctors.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.name}{d.primarySpecialty ? ` — ${d.primarySpecialty}` : ""}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="field-group">
+          <label className="field-label">Tag to Hospital <span className="text-slate-400 font-normal">(optional)</span></label>
+          <select name="hospitalId" defaultValue={blog?.hospitalId ?? ""} className="field-input">
+            <option value="">— None —</option>
+            {hospitals.map((h) => (
+              <option key={h.id} value={h.id}>{h.name}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <ImageUpload name="coverImage" label="Cover Image" defaultValue={blog?.coverImage ?? ""} />

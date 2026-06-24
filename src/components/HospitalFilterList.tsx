@@ -5,12 +5,14 @@ import { Hospital } from "@prisma/client";
 import { HospitalCard } from "./Cards";
 import { IconFilter } from "./Icons";
 import { CustomDropdown } from "./CustomDropdown";
+import type { ImageSetting } from "@/lib/settings";
 
 interface HospitalFilterListProps {
   initialHospitals: Hospital[];
+  setting?: ImageSetting;
 }
 
-export function HospitalFilterList({ initialHospitals }: HospitalFilterListProps) {
+export function HospitalFilterList({ initialHospitals, setting }: HospitalFilterListProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
@@ -170,7 +172,7 @@ export function HospitalFilterList({ initialHospitals }: HospitalFilterListProps
         <>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filteredHospitals.slice(0, visibleCount).map((h) => (
-              <HospitalCard key={h.id} hospital={h} />
+              <HospitalCard key={h.id} hospital={h} setting={setting} />
             ))}
           </div>
 

@@ -21,7 +21,7 @@ function validateName(v: string) {
 function validatePhone(v: string) {
   if (!v) return "Phone number is required";
   const digits = v.replace(/[\s\-+()]/g, "");
-  if (!/^\d{10,13}$/.test(digits)) return "Enter a valid 10-digit phone number";
+  if (!/^\d{7,12}$/.test(digits)) return "Enter a valid phone number";
   return undefined;
 }
 
@@ -35,6 +35,22 @@ function validateCondition(v: string) {
   if (v.length < 2) return "Please describe your condition briefly";
   return undefined;
 }
+
+const COUNTRY_CODES = [
+  { code: "+91", label: "+91 (India)" },
+  { code: "+1", label: "+1 (USA/Canada)" },
+  { code: "+44", label: "+44 (UK)" },
+  { code: "+971", label: "+971 (UAE)" },
+  { code: "+966", label: "+966 (Saudi Arabia)" },
+  { code: "+61", label: "+61 (Australia)" },
+  { code: "+65", label: "+65 (Singapore)" },
+  { code: "+60", label: "+60 (Malaysia)" },
+  { code: "+974", label: "+974 (Qatar)" },
+  { code: "+968", label: "+968 (Oman)" },
+  { code: "+49", label: "+49 (Germany)" },
+  { code: "+33", label: "+33 (France)" },
+  { code: "+81", label: "+81 (Japan)" },
+];
 
 export function ConsultationForm({
   source = "contact",
@@ -53,6 +69,7 @@ export function ConsultationForm({
   );
 
   const [errors, setErrors] = useState<FieldErrors>({});
+  const [countryCode, setCountryCode] = useState("+91");
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   function clearError(field: keyof FieldErrors) {
@@ -141,14 +158,27 @@ export function ConsultationForm({
           <label className="field-label font-medium text-slate-700">
             Phone Number <span className="text-red-500">*</span>
           </label>
-          <input
-            name="phone"
-            type="tel"
-            placeholder="+91 00000 00000"
-            className={fieldClass("phone")}
-            onChange={(e) => clearError("phone")}
-            onBlur={(e) => handleBlur("phone", e.target.value.trim())}
-          />
+          <input type="hidden" name="countryCode" value={countryCode} />
+          <div className="flex gap-2">
+            <select
+              value={countryCode}
+              onChange={(e) => setCountryCode(e.target.value)}
+              className="field-input w-36 flex-shrink-0 bg-white"
+              aria-label="Country code"
+            >
+              {COUNTRY_CODES.map((c) => (
+                <option key={c.code} value={c.code}>{c.label}</option>
+              ))}
+            </select>
+            <input
+              name="phone"
+              type="tel"
+              placeholder="98765 43210"
+              className={`${fieldClass("phone")} flex-1`}
+              onChange={(e) => clearError("phone")}
+              onBlur={(e) => handleBlur("phone", e.target.value.trim())}
+            />
+          </div>
           {touched.phone && errors.phone && (
             <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-red-500">
               <span>⚠</span> {errors.phone}
@@ -168,7 +198,7 @@ export function ConsultationForm({
           <label className="field-label font-medium text-slate-700">City / Location</label>
           <input
             name="city"
-            placeholder="Ghaziabad"
+            placeholder="e.g. Gurugram"
             className={fieldClass("city")}
             onChange={(e) => clearError("city")}
             onBlur={(e) => handleBlur("city", e.target.value.trim())}

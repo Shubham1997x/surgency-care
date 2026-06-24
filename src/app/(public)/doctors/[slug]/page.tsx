@@ -7,6 +7,7 @@ import { CTABand } from "@/components/Sections";
 import { getImageSettings } from "@/lib/settings";
 import { parseList, formatINR } from "@/lib/utils";
 import { ConsultationForm } from "@/components/ConsultationForm";
+import { TreatmentCard, BlogCard } from "@/components/Cards";
 import {
   IconStar,
   IconCheck,
@@ -42,8 +43,32 @@ export default async function DoctorDetailPage({
     orderBy: { name: "asc" },
   });
 
+  // Tagged blogs + related treatments
+  const [doctorBlogs, allTreatments] = await Promise.all([
+    prisma.blog.findMany({
+      where: { doctorId: doctor.id },
+      orderBy: { publishedAt: "desc" },
+    }),
+    prisma.treatment.findMany({ include: { category: true } }),
+  ]);
+
   const specialties = parseList(doctor.specialties);
   const qualifications = parseList(doctor.qualifications);
+
+  const keywords = [doctor.primarySpecialty, ...specialties]
+    .map((s) => s.toLowerCase().trim())
+    .filter(Boolean);
+
+  const relatedTreatments = allTreatments
+    .filter((t) =>
+      keywords.some(
+        (k) =>
+          t.name.toLowerCase().includes(k) ||
+          (t.category?.name ?? "").toLowerCase().includes(k) ||
+          k.includes((t.category?.name ?? "").toLowerCase())
+      )
+    )
+    .slice(0, 3);
 
   const settings = getImageSettings();
   const docSetting = settings.doctor;
@@ -161,11 +186,6 @@ export default async function DoctorDetailPage({
               </dl>
             </div>
 
-            <p className="mt-10 rounded-xl bg-amber-50 p-4 text-xs text-amber-800">
-              <strong>Important:</strong> Results may vary. Consult a qualified doctor for
-              personalised advice. The information provided here is for educational purposes
-              only and does not replace professional medical consultation.
-            </p>
           </div>
 
           {/* Booking sidebar */}
@@ -187,6 +207,40 @@ export default async function DoctorDetailPage({
           </div>
         </div>
       </section>
+
+      {/* Related treatments */}
+      {relatedTreatments.length > 0 && (
+        <section className="py-14 bg-white border-t border-slate-100">
+          <div className="container-page">
+            <h2 className="heading-display text-2xl">Treatments by This Specialist</h2>
+            <p className="mt-2 text-slate-500">
+              Surgical procedures {doctor.name} specialises in.
+            </p>
+            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {relatedTreatments.map((t) => (
+                <TreatmentCard key={t.id} treatment={t} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Tagged blogs */}
+      {doctorBlogs.length > 0 && (
+        <section className="py-14 bg-slate-50">
+          <div className="container-page">
+            <h2 className="heading-display text-2xl">Articles by {doctor.name}</h2>
+            <p className="mt-2 text-slate-500">
+              Health insights and guidance authored by this specialist.
+            </p>
+            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {doctorBlogs.map((b) => (
+                <BlogCard key={b.id} blog={b} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <CTABand
         title={`Ready to meet ${doctor.name}?`}

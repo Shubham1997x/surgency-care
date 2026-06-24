@@ -3,7 +3,9 @@ import { prisma } from "@/lib/db";
 import { PageHeader, EmptyState } from "@/components/dashboard/ui";
 import { DeleteButton } from "@/components/dashboard/DeleteButton";
 import { deleteTreatment } from "@/app/actions/admin";
+import { importTreatmentsCSV } from "@/app/actions/csv";
 import { formatRange } from "@/lib/utils";
+import { CsvActions } from "@/components/dashboard/CsvActions";
 
 export default async function TreatmentsAdmin() {
   const treatments = await prisma.treatment.findMany({
@@ -17,6 +19,9 @@ export default async function TreatmentsAdmin() {
         subtitle="Manage surgical procedures and their details."
         action={{ href: "/dashboard/treatments/new", label: "+ Add Treatment" }}
       />
+      <div className="mb-4">
+        <CsvActions entityType="treatments" data={treatments} importAction={importTreatmentsCSV} />
+      </div>
       {treatments.length === 0 ? (
         <EmptyState message="No treatments yet. Add your first procedure." />
       ) : (

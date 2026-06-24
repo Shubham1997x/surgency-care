@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import { PageHero, CTABand } from "@/components/Sections";
 import { DoctorFilterList } from "@/components/DoctorFilterList";
+import { getImageSettings } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,7 @@ export default async function DoctorsPage() {
     include: { hospital: true },
     orderBy: [{ featured: "desc" }, { rating: "desc" }],
   });
+  const doctorSetting = getImageSettings().doctor;
 
   return (
     <>
@@ -25,7 +27,7 @@ export default async function DoctorsPage() {
 
       <section className="bg-slate-50 py-16">
         <div className="container-page">
-          <DoctorFilterList initialDoctors={doctors} />
+          <DoctorFilterList initialDoctors={doctors} setting={doctorSetting} />
           <p className="mt-8 text-center text-xs text-slate-400">
             All doctors are verified with valid medical registration, minimum 10+ years experience and patient reviews.
           </p>

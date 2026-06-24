@@ -9,7 +9,9 @@ export async function submitLead(
   formData: FormData
 ): Promise<LeadResult> {
   const name = String(formData.get("name") || "").trim();
-  const phone = String(formData.get("phone") || "").trim();
+  const countryCode = String(formData.get("countryCode") || "").trim();
+  const localPhone = String(formData.get("phone") || "").trim();
+  const phone = countryCode ? `${countryCode} ${localPhone}` : localPhone;
   const city = String(formData.get("city") || "").trim();
   const condition = String(formData.get("condition") || "").trim();
   const message = String(formData.get("message") || "").trim();
@@ -21,7 +23,7 @@ export async function submitLead(
   if (!condition) {
     return { ok: false, error: "Please select or enter your condition / treatment needed." };
   }
-  if (!/^[+\d][\d\s-]{6,}$/.test(phone)) {
+  if (!/^\+?\d[\d\s-]{6,}$/.test(phone)) {
     return { ok: false, error: "Please enter a valid phone number." };
   }
 

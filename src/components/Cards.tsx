@@ -4,11 +4,10 @@ import { Media } from "./Media";
 import { HospitalSlideshow } from "./HospitalSlideshow";
 import { formatINR, formatRange, formatDate } from "@/lib/utils";
 import { IconStar, IconMapPin, IconArrow, IconAward, Icon, IconStethoscope } from "./Icons";
-import { getImageSettings } from "@/lib/settings";
+import { getImageSettings, type ImageSetting } from "@/lib/settings";
 
-export function DoctorCard({ doctor }: { doctor: Doctor & { hospital?: Hospital | null } }) {
-  const settings = getImageSettings();
-  const docSetting = settings.doctor;
+export function DoctorCard({ doctor, setting }: { doctor: Doctor & { hospital?: Hospital | null }; setting?: ImageSetting }) {
+  const docSetting = setting ?? getImageSettings().doctor;
 
   // Extract first qualification
   let qualification = "";
@@ -55,7 +54,7 @@ export function DoctorCard({ doctor }: { doctor: Doctor & { hospital?: Hospital 
         </div>
       </div>
 
-      <div className="p-6 pt-0 mt-2 flex items-center justify-between border-t border-slate-50 pt-4">
+      <div className="p-6 pt-0 mt-2 flex items-center justify-between border-t border-slate-50">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Consultation Fee</p>
           <p className="text-xl font-bold text-brand-dark mt-0.5">{formatINR(doctor.consultationFee)}</p>
@@ -68,9 +67,8 @@ export function DoctorCard({ doctor }: { doctor: Doctor & { hospital?: Hospital 
   );
 }
 
-export function HospitalCard({ hospital }: { hospital: Hospital }) {
-  const settings = getImageSettings();
-  const hospSetting = settings.hospital;
+export function HospitalCard({ hospital, setting }: { hospital: Hospital; setting?: ImageSetting }) {
+  const hospSetting = setting ?? getImageSettings().hospital;
 
   // Parse specialties
   let specs: string[] = [];
@@ -118,11 +116,7 @@ export function HospitalCard({ hospital }: { hospital: Hospital }) {
         </div>
       </div>
 
-      <div className="p-6 pt-0 mt-2 flex items-center justify-between border-t border-slate-50 pt-4">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Starting from</p>
-          <p className="text-xl font-bold text-brand-dark mt-0.5">{formatINR(hospital.startingPrice)}</p>
-        </div>
+      <div className="p-6 pt-0 mt-2 flex items-center justify-end border-t border-slate-50">
         <Link href={`/hospitals/${hospital.slug}`} className="btn-blue px-6 py-2.5 text-xs font-semibold rounded-full shadow-sm">
           View Hospital
         </Link>

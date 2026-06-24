@@ -3,6 +3,8 @@ import { prisma } from "@/lib/db";
 import { PageHeader, EmptyState } from "@/components/dashboard/ui";
 import { DeleteButton } from "@/components/dashboard/DeleteButton";
 import { deleteDoctor } from "@/app/actions/admin";
+import { importDoctorsCSV } from "@/app/actions/csv";
+import { CsvActions } from "@/components/dashboard/CsvActions";
 
 export default async function DoctorsAdmin() {
   const doctors = await prisma.doctor.findMany({
@@ -17,6 +19,9 @@ export default async function DoctorsAdmin() {
         subtitle="Add, edit and manage the surgeons listed on your website."
         action={{ href: "/dashboard/doctors/new", label: "+ Add Doctor" }}
       />
+      <div className="mb-4">
+        <CsvActions entityType="doctors" data={doctors} importAction={importDoctorsCSV} />
+      </div>
       {doctors.length === 0 ? (
         <EmptyState message="No doctors yet. Add your first surgeon." />
       ) : (

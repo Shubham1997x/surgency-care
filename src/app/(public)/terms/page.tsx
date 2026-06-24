@@ -106,7 +106,7 @@ export default function TermsPage() {
           <div>
             <h2 className="text-lg font-bold text-teal-950 font-serif">10. Governing Law</h2>
             <p className="mt-2 text-slate-600">
-              These Terms & Conditions shall be governed by and construed in accordance with the laws of India. Any disputes shall be subject to the exclusive jurisdiction of the courts in Ghaziabad/Delhi, India.
+              These Terms & Conditions shall be governed by and construed in accordance with the laws of India. Any disputes shall be subject to the exclusive jurisdiction of the courts in Gurugram, Haryana, India.
             </p>
           </div>
 
@@ -123,13 +123,13 @@ export default function TermsPage() {
             <h2 className="text-lg font-bold text-teal-950 font-serif">12. Contact Us</h2>
             <div className="mt-3 rounded-2xl bg-slate-50 p-6 border border-slate-100 shadow-sm space-y-2 text-sm text-slate-600">
               <p>
-                <strong className="text-slate-800">Email:</strong> legal@surgencycare.com
+                <strong className="text-slate-800">Email:</strong> info@surgencycare.com
               </p>
               <p>
                 <strong className="text-slate-800">Phone:</strong> +91 97802 99802
               </p>
               <p>
-                <strong className="text-slate-800">Address:</strong> Plot No. 12, Sector 10, Vaishali, Ghaziabad, Uttar Pradesh 201010
+                <strong className="text-slate-800">Address:</strong> Ground floor, 479, Sector-38, Gurugram, Haryana 122001
               </p>
             </div>
           </div>

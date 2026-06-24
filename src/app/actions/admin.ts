@@ -306,6 +306,9 @@ export async function saveBlog(formData: FormData) {
   const rawImage = str(formData, "coverImage") || null;
   const coverImage = await renameUploadedImage(rawImage, slug, "blog");
 
+  const doctorId   = str(formData, "doctorId")   || null;
+  const hospitalId = str(formData, "hospitalId") || null;
+
   const data = {
     slug,
     title,
@@ -316,6 +319,8 @@ export async function saveBlog(formData: FormData) {
     author: str(formData, "author") || "Surgency Care Team",
     readTime: str(formData, "readTime") || "5 min read",
     featured: bool(formData, "featured"),
+    doctorId,
+    hospitalId,
   };
 
   if (id) {

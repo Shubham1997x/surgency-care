@@ -3,7 +3,9 @@ import { prisma } from "@/lib/db";
 import { PageHeader, EmptyState } from "@/components/dashboard/ui";
 import { DeleteButton } from "@/components/dashboard/DeleteButton";
 import { deleteHospital } from "@/app/actions/admin";
+import { importHospitalsCSV } from "@/app/actions/csv";
 import { formatINR } from "@/lib/utils";
+import { CsvActions } from "@/components/dashboard/CsvActions";
 
 export default async function HospitalsAdmin() {
   const hospitals = await prisma.hospital.findMany({ orderBy: { createdAt: "desc" } });
@@ -14,6 +16,9 @@ export default async function HospitalsAdmin() {
         subtitle="Manage the hospitals in your network."
         action={{ href: "/dashboard/hospitals/new", label: "+ Add Hospital" }}
       />
+      <div className="mb-4">
+        <CsvActions entityType="hospitals" data={hospitals} importAction={importHospitalsCSV} />
+      </div>
       {hospitals.length === 0 ? (
         <EmptyState message="No hospitals yet. Add your first hospital." />
       ) : (

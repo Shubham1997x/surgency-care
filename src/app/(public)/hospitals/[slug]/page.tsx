@@ -6,7 +6,7 @@ import { Media } from "@/components/Media";
 import { HospitalSlideshow } from "@/components/HospitalSlideshow";
 import { CTABand } from "@/components/Sections";
 import { getImageSettings } from "@/lib/settings";
-import { DoctorCard } from "@/components/Cards";
+import { DoctorCard, TreatmentCard, BlogCard } from "@/components/Cards";
 import { parseList } from "@/lib/utils";
 import { IconCheck, IconBed, IconHospital, IconClock, IconStar, IconPhone } from "@/components/Icons";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
@@ -33,8 +33,29 @@ export default async function HospitalDetailPage({
   });
   if (!hospital) notFound();
 
+  // Tagged blogs + related treatments
+  const [hospitalBlogs, allTreatments] = await Promise.all([
+    prisma.blog.findMany({
+      where: { hospitalId: hospital.id },
+      orderBy: { publishedAt: "desc" },
+    }),
+    prisma.treatment.findMany({ include: { category: true } }),
+  ]);
+
   const whyChoose = parseList<{ title: string; description: string }>(hospital.whyChoose);
   const specialties = parseList(hospital.specialties);
+
+  const hospKeywords = specialties.map((s) => s.toLowerCase().trim()).filter(Boolean);
+  const relatedTreatments = allTreatments
+    .filter((t) =>
+      hospKeywords.some(
+        (k) =>
+          t.name.toLowerCase().includes(k) ||
+          (t.category?.name ?? "").toLowerCase().includes(k) ||
+          k.includes((t.category?.name ?? "").toLowerCase())
+      )
+    )
+    .slice(0, 3);
 
   const facts = [
     { value: `${hospital.beds}+`, label: "Beds", colorClass: "text-[#0ED3B0]" },
@@ -165,6 +186,40 @@ export default async function HospitalDetailPage({
             <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {hospital.doctors.map((d) => (
                 <DoctorCard key={d.id} doctor={d} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Related treatments */}
+      {relatedTreatments.length > 0 && (
+        <section className="py-14 bg-white border-t border-slate-100">
+          <div className="container-page">
+            <h2 className="heading-display text-2xl">Treatments Available at This Hospital</h2>
+            <p className="mt-2 text-slate-500">
+              Surgical procedures our team specialises in at {hospital.name}.
+            </p>
+            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {relatedTreatments.map((t) => (
+                <TreatmentCard key={t.id} treatment={t} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Tagged blogs */}
+      {hospitalBlogs.length > 0 && (
+        <section className="py-14 bg-slate-50">
+          <div className="container-page">
+            <h2 className="heading-display text-2xl">Articles from {hospital.name}</h2>
+            <p className="mt-2 text-slate-500">
+              Health insights and updates from our team at this hospital.
+            </p>
+            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {hospitalBlogs.map((b) => (
+                <BlogCard key={b.id} blog={b} />
               ))}
             </div>
           </div>
