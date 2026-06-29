@@ -5,3 +5,4 @@ package-lock.json
 dev.db
 dev.db-journal
 ADMIN_GUIDE.md
+tsconfig.tsbuildinfo
