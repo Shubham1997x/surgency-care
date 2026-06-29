@@ -4,3 +4,4 @@ node_modules
 package-lock.json
 dev.db
 dev.db-journal
+ADMIN_GUIDE.md

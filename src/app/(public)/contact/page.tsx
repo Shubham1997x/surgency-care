@@ -62,7 +62,7 @@ export default async function ContactPage() {
                 <p className="text-sm text-slate-500">Chat on WhatsApp</p>
                 <p className="font-semibold text-brand-dark">Instant Response</p>
                 <a
-                  href="https://wa.me/919780299802?text=Hi!%20I%20want%20to%20book%20free%20consultation."
+                  href="https://wa.me/919780299802?text=Hi!%20I%20want%20to%20book%20a%20free%20consultation"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-2 inline-flex rounded-full bg-[#25D366] px-4 py-2 text-xs font-semibold text-white"

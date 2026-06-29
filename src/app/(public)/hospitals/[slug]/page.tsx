@@ -34,12 +34,13 @@ export default async function HospitalDetailPage({
   if (!hospital) notFound();
 
   // Tagged blogs + related treatments
-  const [hospitalBlogs, allTreatments] = await Promise.all([
+  const [hospitalBlogs, allTreatments, allBlogs] = await Promise.all([
     prisma.blog.findMany({
       where: { hospitalId: hospital.id },
       orderBy: { publishedAt: "desc" },
     }),
     prisma.treatment.findMany({ include: { category: true } }),
+    prisma.blog.findMany({ orderBy: { publishedAt: "desc" }, take: 50 }),
   ]);
 
   const whyChoose = parseList<{ title: string; description: string }>(hospital.whyChoose);
@@ -55,7 +56,22 @@ export default async function HospitalDetailPage({
           k.includes((t.category?.name ?? "").toLowerCase())
       )
     )
-    .slice(0, 3);
+    .slice(0, 6);
+
+  // Use directly-tagged blogs first; fall back to specialty-keyword matched blogs
+  const displayBlogs =
+    hospitalBlogs.length > 0
+      ? hospitalBlogs
+      : allBlogs
+          .filter((b) =>
+            hospKeywords.some(
+              (k) =>
+                b.category.toLowerCase().includes(k) ||
+                b.title.toLowerCase().includes(k) ||
+                k.includes(b.category.toLowerCase())
+            )
+          )
+          .slice(0, 3);
 
   const facts = [
     { value: `${hospital.beds}+`, label: "Beds", colorClass: "text-[#0ED3B0]" },
@@ -205,22 +221,38 @@ export default async function HospitalDetailPage({
                 <TreatmentCard key={t.id} treatment={t} />
               ))}
             </div>
+            <div className="mt-8 text-center">
+              <Link href="/treatments" className="text-sm font-semibold text-brand-blue hover:underline">
+                View all treatments →
+              </Link>
+            </div>
           </div>
         </section>
       )}
 
-      {/* Tagged blogs */}
-      {hospitalBlogs.length > 0 && (
+      {/* Blogs */}
+      {displayBlogs.length > 0 && (
         <section className="py-14 bg-slate-50">
           <div className="container-page">
-            <h2 className="heading-display text-2xl">Articles from {hospital.name}</h2>
+            <h2 className="heading-display text-2xl">
+              {hospitalBlogs.length > 0
+                ? `Articles from ${hospital.name}`
+                : "Related Health Articles"}
+            </h2>
             <p className="mt-2 text-slate-500">
-              Health insights and updates from our team at this hospital.
+              {hospitalBlogs.length > 0
+                ? "Health insights and updates from our team at this hospital."
+                : `Useful reading on treatments and procedures available at ${hospital.name}.`}
             </p>
             <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {hospitalBlogs.map((b) => (
+              {displayBlogs.map((b) => (
                 <BlogCard key={b.id} blog={b} />
               ))}
+            </div>
+            <div className="mt-8 text-center">
+              <Link href="/blogs" className="text-sm font-semibold text-brand-blue hover:underline">
+                Browse all articles →
+              </Link>
             </div>
           </div>
         </section>

@@ -90,12 +90,12 @@ export function SiteFooter() {
             <div>
               <p className="text-sm text-white">Chat with us</p>
               <a
-                href="https://wa.me/919780299802?text=Hi!%20I%20want%20to%20book%20free%20consultation."
+                href="https://wa.me/919780299802?text=Hi!%20I%20want%20to%20book%20a%20free%20consultation"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm font-medium text-brand-blue hover:text-white transition-colors"
               >
-                "Hi! I want to book free consultation."
+                Chat on WhatsApp
               </a>
             </div>
           </div>
@@ -148,7 +148,7 @@ export function SiteFooter() {
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-teal" />
-                Gurugram, Haryana
+                <span>Ground floor, 479, Sector-38,<br />Gurugram, Haryana 122001</span>
               </li>
             </ul>
 

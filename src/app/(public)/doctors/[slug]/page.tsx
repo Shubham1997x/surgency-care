@@ -44,12 +44,13 @@ export default async function DoctorDetailPage({
   });
 
   // Tagged blogs + related treatments
-  const [doctorBlogs, allTreatments] = await Promise.all([
+  const [doctorBlogs, allTreatments, allBlogs] = await Promise.all([
     prisma.blog.findMany({
       where: { doctorId: doctor.id },
       orderBy: { publishedAt: "desc" },
     }),
     prisma.treatment.findMany({ include: { category: true } }),
+    prisma.blog.findMany({ orderBy: { publishedAt: "desc" }, take: 50 }),
   ]);
 
   const specialties = parseList(doctor.specialties);
@@ -68,7 +69,22 @@ export default async function DoctorDetailPage({
           k.includes((t.category?.name ?? "").toLowerCase())
       )
     )
-    .slice(0, 3);
+    .slice(0, 6);
+
+  // Use directly-tagged blogs first; fall back to specialty-keyword matched blogs
+  const displayBlogs =
+    doctorBlogs.length > 0
+      ? doctorBlogs
+      : allBlogs
+          .filter((b) =>
+            keywords.some(
+              (k) =>
+                b.category.toLowerCase().includes(k) ||
+                b.title.toLowerCase().includes(k) ||
+                k.includes(b.category.toLowerCase())
+            )
+          )
+          .slice(0, 3);
 
   const settings = getImageSettings();
   const docSetting = settings.doctor;
@@ -221,22 +237,38 @@ export default async function DoctorDetailPage({
                 <TreatmentCard key={t.id} treatment={t} />
               ))}
             </div>
+            <div className="mt-8 text-center">
+              <Link href="/treatments" className="text-sm font-semibold text-brand-blue hover:underline">
+                View all treatments →
+              </Link>
+            </div>
           </div>
         </section>
       )}
 
-      {/* Tagged blogs */}
-      {doctorBlogs.length > 0 && (
+      {/* Blogs */}
+      {displayBlogs.length > 0 && (
         <section className="py-14 bg-slate-50">
           <div className="container-page">
-            <h2 className="heading-display text-2xl">Articles by {doctor.name}</h2>
+            <h2 className="heading-display text-2xl">
+              {doctorBlogs.length > 0
+                ? `Articles by ${doctor.name}`
+                : "Related Health Articles"}
+            </h2>
             <p className="mt-2 text-slate-500">
-              Health insights and guidance authored by this specialist.
+              {doctorBlogs.length > 0
+                ? "Health insights and guidance authored by this specialist."
+                : `Useful reading on ${doctor.primarySpecialty} and related conditions.`}
             </p>
             <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {doctorBlogs.map((b) => (
+              {displayBlogs.map((b) => (
                 <BlogCard key={b.id} blog={b} />
               ))}
+            </div>
+            <div className="mt-8 text-center">
+              <Link href="/blogs" className="text-sm font-semibold text-brand-blue hover:underline">
+                Browse all articles →
+              </Link>
             </div>
           </div>
         </section>
