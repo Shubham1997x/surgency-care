@@ -11,6 +11,9 @@
     "db:seed": "tsx prisma/seed.ts",
     "setup": "prisma generate && prisma db push && tsx prisma/seed.ts"
   },
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
