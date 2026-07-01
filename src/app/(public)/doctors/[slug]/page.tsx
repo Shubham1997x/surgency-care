@@ -8,6 +8,7 @@ import { getImageSettings } from "@/lib/settings";
 import { parseList, formatINR } from "@/lib/utils";
 import { ConsultationForm } from "@/components/ConsultationForm";
 import { TreatmentCard, BlogCard } from "@/components/Cards";
+import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
 import {
   IconStar,
   IconCheck,
@@ -273,6 +274,8 @@ export default async function DoctorDetailPage({
           </div>
         </section>
       )}
+
+      <MedicalDisclaimer />
 
       <CTABand
         title={`Ready to meet ${doctor.name}?`}

@@ -10,6 +10,7 @@ import { DoctorCard, TreatmentCard, BlogCard } from "@/components/Cards";
 import { parseList } from "@/lib/utils";
 import { IconCheck, IconBed, IconHospital, IconClock, IconStar, IconPhone } from "@/components/Icons";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
+import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
 
 export async function generateMetadata({
   params,
@@ -257,6 +258,8 @@ export default async function HospitalDetailPage({
           </div>
         </section>
       )}
+
+      <MedicalDisclaimer />
 
       <div id="cta-booking" className="scroll-mt-6">
         <CTABand

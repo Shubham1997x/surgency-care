@@ -8,6 +8,7 @@ import { IconCheck, IconArrow, IconStar } from "@/components/Icons";
 import { Media } from "@/components/Media";
 import { getImageSettings } from "@/lib/settings";
 import { TestimonialCarousel } from "@/components/TestimonialCarousel";
+import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
 
 export async function generateMetadata({
   params,
@@ -286,6 +287,8 @@ export default async function TreatmentDetailPage({
           </div>
         </section>
       )}
+      <MedicalDisclaimer />
+
       <CTABand
         title={`Suffering from ${conditionName}?`}
         subtitle="Don't wait for complications. Get expert advice and a clear treatment plan today."
