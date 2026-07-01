@@ -212,13 +212,10 @@ export function SiteFooter() {
               </Link>
               <span>|</span>
               <Link href="/terms" className="hover:text-white transition-colors">
-                Terms & Conditions
+                Terms &amp; Conditions
               </Link>
             </div>
           </div>
-          <p className="max-w-xl">
-            Information on this website is for general awareness only and not a substitute for professional medical advice. Always consult a qualified doctor.
-          </p>
         </div>
       </div>
     </footer>

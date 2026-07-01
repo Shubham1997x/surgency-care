@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import { PageHero, CTABand } from "@/components/Sections";
+import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
 import { DoctorFilterList } from "@/components/DoctorFilterList";
 import { getImageSettings } from "@/lib/settings";
 
@@ -33,6 +34,8 @@ export default async function DoctorsPage() {
           </p>
         </div>
       </section>
+
+      <MedicalDisclaimer />
 
       <CTABand
         title="Not sure which doctor is right for you?"

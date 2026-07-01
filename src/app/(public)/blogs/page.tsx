@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import { PageHero, CTABand } from "@/components/Sections";
+import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
 import { BlogList } from "@/components/BlogList";
 
 export const dynamic = "force-dynamic";
@@ -29,6 +30,8 @@ export default async function BlogsPage() {
           )}
         </div>
       </section>
+
+      <MedicalDisclaimer />
 
       <CTABand
         title="Need Personalized Guidance?"

@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { PageHero, SectionHeading, CTABand } from "@/components/Sections";
+import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
 import {
   IconShield, IconHeart, IconStar, IconCheck,
   IconPhone, IconClock, IconUsers, IconAward,
@@ -346,6 +347,8 @@ export default async function AboutPage() {
           </div>
         </div>
       </section>
+
+      <MedicalDisclaimer />
 
       <CTABand
         title="Ready to experience care that truly cares?"

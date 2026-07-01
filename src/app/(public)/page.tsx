@@ -6,6 +6,7 @@ import { Building2, Stethoscope, ShieldCheck, PhoneCall } from "lucide-react";
 // to reflect dashboard edits immediately.
 export const dynamic = "force-dynamic";
 import { SectionHeading, CTABand } from "@/components/Sections";
+import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
 import { DoctorCard, HospitalCard, CategoryCard, BlogCard } from "@/components/Cards";
 import {
   IconPhone,
@@ -368,6 +369,8 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      <MedicalDisclaimer />
 
       <CTABand
         title="Not sure where to start?"

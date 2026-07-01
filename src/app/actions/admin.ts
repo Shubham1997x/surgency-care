@@ -367,6 +367,7 @@ export async function saveTestimonial(formData: FormData) {
     name,
     image: str(formData, "image") || null,
     text: str(formData, "text"),
+    videoUrl: str(formData, "videoUrl") || null,
     time: str(formData, "time") || "1 day ago",
     rating: num(formData, "rating") || 5.0,
     featured: bool(formData, "featured"),

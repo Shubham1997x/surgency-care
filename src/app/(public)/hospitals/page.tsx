@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import { PageHero, CTABand } from "@/components/Sections";
+import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
 import { HospitalFilterList } from "@/components/HospitalFilterList";
 import { getImageSettings } from "@/lib/settings";
 
@@ -30,6 +31,8 @@ export default async function HospitalsPage() {
           </p>
         </div>
       </section>
+
+      <MedicalDisclaimer />
 
       <CTABand
         title="Not sure which hospital is right for you?"

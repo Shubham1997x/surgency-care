@@ -22,7 +22,7 @@ export function Sidebar({ email }: { email: string }) {
     <aside className="flex w-60 flex-shrink-0 flex-col border-r border-slate-200 bg-white">
       <div className="border-b border-slate-100 px-5 py-5">
         <Link href="/dashboard" className="font-serif text-lg font-bold text-brand-dark">
-          Surgency <span className="text-brand-orange">Admin</span>
+          Surgency Care <br /><span className="text-brand-orange">Admin</span>
         </Link>
         <p className="mt-1 truncate text-xs text-slate-400">{email}</p>
       </div>
@@ -33,11 +33,10 @@ export function Sidebar({ email }: { email: string }) {
             <Link
               key={l.href}
               href={l.href}
-              className={`block rounded-lg px-3 py-2 text-sm font-medium transition ${
-                active
-                  ? "bg-brand-teal/10 text-brand-dark"
-                  : "text-slate-600 hover:bg-slate-50"
-              }`}
+              className={`block rounded-lg px-3 py-2 text-sm font-medium transition ${active
+                ? "bg-brand-teal/10 text-brand-dark"
+                : "text-slate-600 hover:bg-slate-50"
+                }`}
             >
               {l.label}
             </Link>

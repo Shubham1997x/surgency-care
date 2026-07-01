@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import { PageHero, SectionHeading, CTABand } from "@/components/Sections";
+import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
 import { CategoryCard, TreatmentCard } from "@/components/Cards";
 
 export const metadata: Metadata = {
@@ -57,6 +58,8 @@ export default async function TreatmentsPage() {
           </div>
         </div>
       </section>
+
+      <MedicalDisclaimer />
 
       <CTABand
         title="Confused about which treatment is right for you?"

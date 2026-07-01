@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ConsultationForm } from "@/components/ConsultationForm";
+import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
 import { IconPhone, IconChat, IconMapPin } from "@/components/Icons";
 import { prisma } from "@/lib/db";
 
@@ -87,6 +88,8 @@ export default async function ContactPage() {
           </div>
         </div>
       </section>
+
+      <MedicalDisclaimer />
 
       <section className="hero-gradient-dark">
         <div className="container-page py-12 text-center text-white">

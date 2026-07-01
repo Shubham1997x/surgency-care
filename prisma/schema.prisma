@@ -140,6 +140,7 @@ model Testimonial {
   name        String
   image       String?
   text        String
+  videoUrl    String?
   time        String     @default("1 day ago")
   rating      Float      @default(5.0)
   featured    Boolean    @default(true)

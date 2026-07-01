@@ -59,6 +59,14 @@ export function TestimonialForm({
 
       <ImageUpload name="image" label="Reviewer Photo" defaultValue={testimonial?.image ?? ""} />
 
+      <Field
+        label="Video URL (optional)"
+        name="videoUrl"
+        defaultValue={testimonial?.videoUrl ?? ""}
+        placeholder="e.g. https://www.youtube.com/watch?v=..."
+        hint="YouTube or direct video link. If provided, shows as a video testimonial."
+      />
+
       <TextArea
         label="Review Text"
         name="text"

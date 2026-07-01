@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/Sections";
+import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
 import { Accordion } from "@/components/Accordion";
 import { Phone } from "lucide-react";
 
@@ -49,6 +50,8 @@ export default function FaqsPage() {
           <Accordion items={faqs} />
         </div>
       </section>
+
+      <MedicalDisclaimer />
 
       {/* Care Team Banner */}
       <section className="bg-slate-50/50 pb-20 text-center">
