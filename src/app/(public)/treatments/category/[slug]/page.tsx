@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { PageHero, CTABand } from "@/components/Sections";
 import { TreatmentCard } from "@/components/Cards";
+import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
 
 export async function generateMetadata({
   params,
@@ -47,6 +48,8 @@ export default async function CategoryPage({
           )}
         </div>
       </section>
+
+      <MedicalDisclaimer />
 
       <CTABand
         title="Ready to take the next step?"
