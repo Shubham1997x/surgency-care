@@ -18,8 +18,8 @@ export const metadata: Metadata = { title: "About Us" };
 
 const drives = [
   { icon: IconShield, title: "Trust & Safety", desc: "Every doctor and hospital is verified. Your safety is our top priority." },
-  { icon: IconHeart,  title: "Empathy & Care", desc: "We treat every patient like family. Care, communication and empathy matter to us." },
-  { icon: IconStar,   title: "Affordability",  desc: "Quality surgery shouldn't be a burden. We help you access the best care at fair prices." },
+  { icon: IconHeart, title: "Empathy & Care", desc: "We treat every patient like family. Care, communication and empathy matter to us." },
+  { icon: IconStar, title: "Affordability", desc: "Quality surgery shouldn't be a burden. We help you access the best care at fair prices." },
 ];
 
 const promises = [
@@ -31,9 +31,9 @@ const promises = [
 
 const stats = [
   { value: "1200+", label: "Surgeries Facilitated", colorClass: "text-[#0ED3B0]" },
-  { value: "85+",   label: "Expert Surgeons",        colorClass: "text-[#4E97FD]" },
-  { value: "25+",   label: "Partner Hospitals",      colorClass: "text-[#FF9700]" },
-  { value: "4.9",   label: "Average Rating",         colorClass: "text-[#0E606E]" },
+  { value: "85+", label: "Expert Surgeons", colorClass: "text-[#4E97FD]" },
+  { value: "25+", label: "Partner Hospitals", colorClass: "text-[#FF9700]" },
+  { value: "4.9", label: "Average Rating", colorClass: "text-[#0E606E]" },
 ];
 
 const team = [
@@ -47,7 +47,7 @@ const team = [
     name: "Divyansh Chhabra",
     role: "Co-founder & CEO",
     bio: "Drives growth and partnerships, connecting patients with the best surgical specialists and accredited hospitals nationwide.",
-    image: "/Divyansh-Chhabra-Surgency-Care-Co-founder-300x300.jpg",
+    image: "/Divyansh-Chhabra-Surgency-Care-Co-founder-300x300.png",
   },
   {
     name: "Paras Chandna",
@@ -58,12 +58,12 @@ const team = [
 ];
 
 const benefits = [
-  { icon: IconPhone,   title: "24×7 Emergency Service", desc: "Round-the-clock availability so you're never alone in a medical emergency." },
-  { icon: IconClock,   title: "Free Consultation",       desc: "Speak to our care advisors at no cost — ask anything, anytime." },
-  { icon: IconAward,   title: "Qualified Doctors",       desc: "Every surgeon is verified for qualifications, experience and patient outcomes." },
-  { icon: IconUsers,   title: "Carebuddy Support",       desc: "A dedicated coordinator guides you from first call to full recovery." },
-  { icon: CreditCard,  title: "EMI Facilities",          desc: "Flexible, interest-friendly payment plans so cost is never a barrier." },
-  { icon: ShieldCheck, title: "Insurance Support",       desc: "We help you navigate insurance claims with zero hassle." },
+  { icon: IconPhone, title: "24×7 Emergency Service", desc: "Round-the-clock availability so you're never alone in a medical emergency." },
+  { icon: IconClock, title: "Free Consultation", desc: "Speak to our care advisors at no cost — ask anything, anytime." },
+  { icon: IconAward, title: "Qualified Doctors", desc: "Every surgeon is verified for qualifications, experience and patient outcomes." },
+  { icon: IconUsers, title: "Carebuddy Support", desc: "A dedicated coordinator guides you from first call to full recovery." },
+  { icon: CreditCard, title: "EMI Facilities", desc: "Flexible, interest-friendly payment plans so cost is never a barrier." },
+  { icon: ShieldCheck, title: "Insurance Support", desc: "We help you navigate insurance claims with zero hassle." },
 ];
 
 const fallbackTestimonials = [
