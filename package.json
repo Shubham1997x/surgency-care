@@ -14,9 +14,6 @@
   "engines": {
     "node": ">=20.9.0"
   },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
-  },
   "dependencies": {
     "@next/third-parties": "^16.2.9",
     "@prisma/client": "^6.2.1",
