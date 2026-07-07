@@ -6,6 +6,12 @@ const prisma = new PrismaClient();
 const J = (arr: unknown[]) => JSON.stringify(arr);
 
 async function main() {
+  const adminCount = await prisma.admin.count();
+  if (adminCount > 0) {
+    console.log("🌱 Database already seeded. Skipping seed.");
+    return;
+  }
+
   console.log("🌱 Seeding Surgency Care database…");
 
   // ---- Admin ----

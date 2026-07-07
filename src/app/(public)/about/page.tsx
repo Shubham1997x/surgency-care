@@ -53,7 +53,7 @@ const team = [
     name: "Paras Chandna",
     role: "Co-founder, CTO & CMO",
     bio: "Leads technology and outreach to ensure patients get seamless, data-driven support at every step of their care journey.",
-    image: "/Paras-Chandna-Surgency-Care-Co-founder-300x300.jpg",
+    image: "/Paras-Chandna-Surgency-Care-Co-founder-300x300.png",
   },
 ];
 
