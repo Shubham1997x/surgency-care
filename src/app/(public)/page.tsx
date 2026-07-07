@@ -96,7 +96,7 @@ export default async function HomePage() {
           playsInline
           className="absolute inset-0 z-0 h-full w-full object-cover"
         >
-          <source src="https://surgencycare.com/wp-content/uploads/2026/03/homehero.mp4" type="video/mp4" />
+          <source src="/homehero.mp4" type="video/mp4" />
           {/* Fallback image */}
           <img
             src="https://via.placeholder.com/1920x1080/4E97FD/ffffff?text=Surgency+Care+Doctor"
@@ -175,14 +175,14 @@ export default async function HomePage() {
           {[...Array(4)].map((_, setIdx) => (
             <div key={setIdx} className="flex shrink-0 items-center gap-16 px-8">
               {[
-                { src: "https://surgencycare.com/wp-content/uploads/2026/05/Piles-e1778613479139.png", label: "Piles", href: "/treatments/piles-treatment" },
-                { src: "https://surgencycare.com/wp-content/uploads/2026/05/Gall-Bladder-Stone.png", label: "Gall Bladder Stone", href: "/treatments/gallbladder-stone-removal" },
-                { src: "https://surgencycare.com/wp-content/uploads/2026/05/Kidney-Stone.png", label: "Kidney Stone", href: "/treatments/kidney-stone-laser-treatment" },
-                { src: "https://surgencycare.com/wp-content/uploads/2026/05/Gynecomastia.png", label: "Gynecomastia", href: "/treatments/gynecomastia-surgery" },
-                { src: "https://surgencycare.com/wp-content/uploads/2026/05/Lipoma.png", label: "Lipoma", href: "/treatments/lipoma-removal-surgery" },
-                { src: "https://surgencycare.com/wp-content/uploads/2026/05/Lasik-e1778614006333.png", label: "Lasik", href: "/treatments/lasik-eye-surgery" },
-                { src: "https://surgencycare.com/wp-content/uploads/2026/05/Liposuction.png", label: "Liposuction", href: "/treatments/liposuction-body-contouring" },
-                { src: "https://surgencycare.com/wp-content/uploads/2026/05/Hernia.png", label: "Hernia", href: "/treatments/hernia-repair" },
+                { src: "/Piles-e1778613479139.png", label: "Piles", href: "/treatments/piles-treatment" },
+                { src: "/Gall-Bladder-Stone.png", label: "Gall Bladder Stone", href: "/treatments/gallbladder-stone-removal" },
+                { src: "/Kidney-Stone.png", label: "Kidney Stone", href: "/treatments/kidney-stone-laser-treatment" },
+                { src: "/Gynecomastia.png", label: "Gynecomastia", href: "/treatments/gynecomastia-surgery" },
+                { src: "/Lipoma.png", label: "Lipoma", href: "/treatments/lipoma-removal-surgery" },
+                { src: "/Lasik-e1778614006333.png", label: "Lasik", href: "/treatments/lasik-eye-surgery" },
+                { src: "/Liposuction.png", label: "Liposuction", href: "/treatments/liposuction-body-contouring" },
+                { src: "/Hernia.png", label: "Hernia", href: "/treatments/hernia-repair" },
               ].map((s) => (
                 <Link
                   key={s.label}
